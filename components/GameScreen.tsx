@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LevelData } from '../types';
 import { getFlagName } from '../utils/flagData';
-import { Lightbulb, Home, Clock, Check, X, ImageOff, Trophy } from 'lucide-react';
 import { playSound } from '../utils/sound';
 import { useLanguage } from '../utils/i18n';
 
@@ -88,180 +87,158 @@ export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore
     }
   };
 
-  const getBackgroundClass = () => {
-    if (isGameOver) return 'bg-gray-200';
-    switch(level.difficulty) {
-      case 'easy': return 'bg-[#ecfccb]';
-      case 'medium': return 'bg-[#dbeafe]';
-      case 'hard': return 'bg-[#f3e8ff]';
-      default: return 'bg-white';
-    }
-  };
+  // --- RESPONSIVE GRID LOGIC (AUTO-FIT NO SCROLL) ---
+  const totalItems = shuffledFlags.length;
+  let pCols = 2; // Portrait Columns
+  let lCols = 3; // Landscape Columns
 
-  // Compact Header Button Component
-  const HeaderBtn = ({ onClick, icon, colorClass, borderClass, text }: any) => (
-    <button 
-      onClick={onClick} 
-      className={`
-        h-10 md:h-12 lg:h-14 
-        px-3 md:px-5 lg:px-6 
-        flex items-center justify-center gap-2 
-        rounded-xl md:rounded-2xl 
-        ${colorClass} ${borderClass} btn-3d
-      `}
-    >
-      {icon}
-      {text && <span className="text-xs md:text-sm lg:text-base font-black">{text}</span>}
-    </button>
-  );
+  if (totalItems <= 4) { pCols = 2; lCols = 2; }
+  else if (totalItems <= 6) { pCols = 2; lCols = 3; }
+  else if (totalItems <= 9) { pCols = 3; lCols = 3; }
+  else if (totalItems <= 12) { pCols = 3; lCols = 4; }
+  else if (totalItems <= 16) { pCols = 4; lCols = 4; }
+  else if (totalItems <= 20) { pCols = 4; lCols = 5; }
+  else if (totalItems <= 30) { pCols = 5; lCols = 6; }
+  else { pCols = 6; lCols = 8; }
+
+  const pRows = Math.ceil(totalItems / pCols);
+  const lRows = Math.ceil(totalItems / lCols);
+
+  const gridStyle = {
+    '--p-cols': pCols,
+    '--p-rows': pRows,
+    '--l-cols': lCols,
+    '--l-rows': lRows,
+  } as React.CSSProperties;
 
   return (
-    <div className={`fixed inset-0 w-full h-[100dvh] flex flex-col landscape:flex-row font-sans transition-colors duration-500 overflow-hidden ${getBackgroundClass()}`}>
+    <div className="fixed inset-0 w-full h-[100dvh] flex flex-col font-sans overflow-hidden bg-gradient-to-b from-[#a5f3fc] via-[#cffafe] to-[#ecfeff]">
       
-      {/* 
-        HEADER / SIDEBAR 
-        Portrait: Fixed Height Top Bar.
-        Landscape: Fixed Width Sidebar.
-        Systematic: Use md/lg prefixes for tablet sizing.
-      */}
+      {/* Background Decor */}
+      <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-10 left-0 w-full h-64 bg-gradient-to-b from-[#22d3ee]/20 to-transparent blur-3xl"></div>
+          <div className="absolute top-20 left-10 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-3 h-3 bg-pink-400 rounded animate-spin"></div>
+      </div>
+
+      {/* --- HEADER --- */}
       <div className="
-         bg-white shadow-md border-b-4 landscape:border-b-0 landscape:border-r-4 border-gray-200 z-30 shrink-0
-         p-2 md:p-4 lg:p-6
-         flex flex-row landscape:flex-col items-center justify-between
-         h-16 md:h-20 lg:h-24 landscape:h-full 
-         landscape:w-56 md:landscape:w-64 lg:landscape:w-80
-         landscape:justify-start landscape:gap-6
+         relative z-30 flex items-center justify-between w-full max-w-5xl mx-auto gap-2
+         pt-3 px-3 pb-2 
+         landscape:pt-2 landscape:pb-1 landscape:px-6
+         shrink-0 bg-white/30 backdrop-blur-sm border-b border-white/40 shadow-sm
       ">
-        
-        {/* Navigation & Score Group */}
-        <div className="flex landscape:flex-col gap-2 md:gap-3 items-center landscape:w-full">
-           <div className="flex items-center gap-2 landscape:w-full landscape:justify-between">
-              <HeaderBtn 
-                 onClick={() => { playSound('click'); onGoHome(); }} 
-                 icon={<Home className="text-white w-4 h-4 md:w-6 md:h-6" strokeWidth={3} />}
-                 colorClass="bg-orange-400"
-                 borderClass="border-orange-600"
-              />
-              <div className="bg-indigo-500 text-white text-[10px] md:text-xs lg:text-sm font-black px-2 py-1 md:px-3 md:py-2 lg:px-4 lg:py-3 rounded-lg md:rounded-xl shadow-sm border-b-2 border-indigo-700">
-                LVL {level.levelNumber}
-              </div>
-           </div>
-           
-           {/* Score (Hidden on small mobile portrait to save space, visible in landscape) */}
-           <div className="hidden landscape:flex bg-gradient-to-b from-yellow-400 to-yellow-500 text-yellow-900 px-3 md:px-4 py-2 md:py-3 rounded-xl md:rounded-2xl border-b-4 border-yellow-700 w-full items-center justify-between shadow-sm">
-                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase opacity-70">SCORE</span>
-                <div className="flex items-center gap-1">
-                   <Trophy className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-white" strokeWidth={3} />
-                   <span className="font-titan text-lg md:text-xl lg:text-2xl text-white">{currentTotalScore}</span>
-                </div>
+        {/* Home & Level Badge */}
+        <div className="flex items-center gap-2">
+           <button 
+             onClick={() => { playSound('click'); onGoHome(); }}
+             className="w-10 h-10 landscape:w-9 landscape:h-9 rounded-xl bg-gradient-to-b from-orange-400 to-orange-600 border-b-4 border-orange-800 text-white shadow active:border-b-0 active:translate-y-1 flex items-center justify-center transition-all"
+           >
+              <i className="fi fi-rr-home text-lg landscape:text-sm"></i>
+           </button>
+           <div className="bg-yellow-400 text-yellow-900 border-b-4 border-yellow-700 rounded-xl px-3 py-1.5 font-display font-bold text-xs shadow">
+              {t.game.lvl} {level.levelNumber}
            </div>
         </div>
 
-        {/* TARGET MISSION (Center Piece) */}
-        <div className="flex-1 landscape:flex-none landscape:w-full mx-2 landscape:mx-0 bg-sky-50 rounded-xl md:rounded-2xl p-1.5 md:p-3 lg:p-4 border-2 md:border-4 border-sky-200 text-center flex flex-col justify-center min-w-0">
-             <span className="text-sky-500 font-black text-[8px] md:text-[10px] lg:text-xs uppercase tracking-widest mb-0.5">{t.game.find}</span>
-             <h1 className="text-sm md:text-xl lg:text-2xl font-black text-gray-800 uppercase leading-none font-titan truncate w-full">
-                {targetName}
-             </h1>
+        {/* MISSION PILL */}
+        <div className="flex-1 flex justify-center px-2 min-w-0">
+            <div className="bg-white/90 backdrop-blur rounded-2xl border-2 border-white px-4 py-1 flex flex-col items-center shadow-lg relative min-w-[120px] max-w-full">
+                <span className="text-sky-500 font-display font-bold text-[9px] landscape:text-[8px] uppercase tracking-widest leading-none mb-0.5">
+                   {t.game.find}
+                </span>
+                <h1 className="text-red-500 font-display font-extrabold text-base landscape:text-sm md:text-xl uppercase leading-none truncate max-w-[150px] md:max-w-xs text-center">
+                   {targetName}
+                </h1>
+            </div>
         </div>
 
-        {/* CONTROLS (Timer & Hint) */}
-        <div className="flex landscape:flex-col gap-2 md:gap-3 landscape:w-full landscape:mt-auto">
+        {/* Right Controls */}
+        <div className="flex items-center gap-2">
             {timeLeft !== null && (
-               <div className={`
-                 px-2 py-1.5 md:px-4 md:py-2.5 lg:px-5 lg:py-3 
-                 rounded-xl md:rounded-2xl border-b-4 font-black 
-                 text-xs md:text-base lg:text-lg 
-                 flex items-center justify-center gap-1 shadow-sm w-full
-                 ${timeLeft <= 5 ? 'bg-red-500 border-red-700 text-white animate-pulse' : 'bg-white border-gray-300 text-gray-700'}
-               `}>
-                 <Clock className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" strokeWidth={3} /> {timeLeft}s
+               <div className="bg-white/80 backdrop-blur rounded-xl px-2 py-1 flex items-center gap-1.5 shadow border-2 border-white/50">
+                  <i className="fi fi-rr-clock-three text-gray-400 text-sm"></i>
+                  <span className={`font-display font-bold text-sm ${timeLeft <= 5 ? 'text-red-500 animate-pulse' : 'text-gray-700'}`}>
+                    {timeLeft}{t.game.timeSuffix}
+                  </span>
                </div>
             )}
             <button 
               onClick={useHint} 
-              disabled={hintsLeft <= 0 || isWon || isGameOver} 
+              disabled={hintsLeft <= 0}
               className={`
-                 px-3 py-1.5 md:px-4 md:py-2.5 lg:px-5 lg:py-3 
-                 rounded-xl md:rounded-2xl font-bold text-xs md:text-sm lg:text-base 
-                 border-b-4 flex items-center justify-center gap-1 transition-all btn-3d w-full
-                 ${hintsLeft > 0 && !isGameOver 
-                    ? 'bg-yellow-300 text-yellow-900 border-yellow-600' 
-                    : 'bg-gray-200 text-gray-400 border-gray-300'}
+                w-10 h-10 landscape:w-9 landscape:h-9 rounded-full border-b-4 shadow active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center relative
+                ${hintsLeft > 0 ? 'bg-yellow-400 border-yellow-700 text-yellow-900' : 'bg-gray-200 border-gray-400 text-gray-400'}
               `}
             >
-              <Lightbulb className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" fill={hintsLeft > 0 ? "currentColor" : "none"} />
-              <span className="hidden landscape:inline font-black">{t.game.hint} ({hintsLeft})</span>
-              <span className="landscape:hidden font-black">({hintsLeft})</span>
+               <i className="fi fi-rr-bulb text-lg landscape:text-sm"></i>
+               {hintsLeft > 0 && (
+                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white font-sans">
+                   {hintsLeft}
+                 </span>
+               )}
             </button>
         </div>
       </div>
 
-      {/* 
-        GAME GRID AREA 
-        Uses flex to center, but overflow hidden to contain grid.
-      */}
-      <div className="flex-1 relative overflow-hidden flex flex-col items-center justify-center p-2 md:p-6 lg:p-8">
-        <div className="w-full h-full max-w-6xl flex items-center justify-center">
-          
-          <div 
-             className="grid gap-2 md:gap-4 lg:gap-5 w-full max-h-full"
-             style={{ 
-               // Smart Grid Calculation:
-               // Ensure flags don't get too stretched or too squashed.
-               gridTemplateColumns: `repeat(${level.gridCols}, minmax(0, 1fr))`,
-               alignContent: 'center',
-             }}
-          >
+      {/* --- GRID CONTAINER --- */}
+      <div className="flex-1 min-h-0 w-full relative z-20 flex flex-col p-4 landscape:px-12 landscape:py-2">
+         
+         <div 
+            className="
+              w-full h-full 
+              grid gap-2 landscape:gap-3 
+              grid-cols-[repeat(var(--p-cols),minmax(0,1fr))] grid-rows-[repeat(var(--p-rows),minmax(0,1fr))]
+              landscape:grid-cols-[repeat(var(--l-cols),minmax(0,1fr))] landscape:grid-rows-[repeat(var(--l-rows),minmax(0,1fr))]
+            "
+            style={gridStyle}
+         >
             {shuffledFlags.map((flagCode, index) => {
-              const isWrong = wrongIndex === index;
-              const isCorrect = correctId === flagCode;
-              return (
-                <button
-                  key={`${flagCode}-${index}`}
-                  id={flagCode === level.targetFlag ? `flag-${flagCode}` : undefined}
-                  onClick={() => !isWon && !isGameOver && handleCardClick(flagCode, index)}
-                  disabled={isWon || isGameOver}
-                  className={`
-                    relative bg-white rounded-lg md:rounded-2xl shadow-sm transition-all duration-200
-                    flex items-center justify-center overflow-hidden 
-                    border-2 md:border-4 border-white
-                    btn-3d
-                    ${isWrong 
-                      ? 'border-red-500 bg-red-100 shake z-10' 
-                      : isCorrect 
-                        ? 'border-green-500 bg-green-100 scale-105 z-20' 
-                        : isGameOver 
-                          ? 'grayscale opacity-50' 
-                          : 'border-b-4 md:border-b-[6px] border-b-gray-200 hover:border-b-sky-300 hover:border-sky-300'}
-                  `}
-                  style={{ 
-                     // Force aspect ratio to prevent squashing
-                     aspectRatio: '4/3' 
-                  }}
-                >
-                  {failedImages[index] ? (
-                    <ImageOff size={24} className="text-gray-300" />
-                  ) : (
-                    <img src={`https://flagcdn.com/w320/${flagCode}.png`} alt="flag" className="w-full h-full object-contain p-1" onError={() => setFailedImages(p => ({...p, [index]: true}))} />
-                  )}
-                  
-                  {/* Overlay Icons - Responsive sizes */}
-                  {(isWrong || isCorrect) && (
-                    <div className={`absolute inset-0 flex items-center justify-center ${isCorrect ? 'bg-green-500/40' : 'bg-red-500/40'}`}>
-                      {isCorrect ? (
-                        <Check className="text-white drop-shadow-md w-8 h-8 md:w-16 md:h-16 lg:w-20 lg:h-20" strokeWidth={5} /> 
-                      ) : (
-                        <X className="text-white drop-shadow-md w-8 h-8 md:w-16 md:h-16 lg:w-20 lg:h-20" strokeWidth={5} />
-                      )}
-                    </div>
-                  )}
-                </button>
-              );
+               const isWrong = wrongIndex === index;
+               const isCorrect = correctId === flagCode;
+
+               return (
+                  <button
+                    key={`${flagCode}-${index}`}
+                    id={flagCode === level.targetFlag ? `flag-${flagCode}` : undefined}
+                    onClick={() => !isWon && !isGameOver && handleCardClick(flagCode, index)}
+                    disabled={isWon || isGameOver}
+                    className={`
+                      relative w-full h-full
+                      rounded-xl landscape:rounded-lg
+                      bg-white shadow-sm hover:shadow-md
+                      transition-all duration-200
+                      flex items-center justify-center overflow-visible
+                      group
+                      border-b-[3px] landscape:border-b-[3px] border-gray-200 active:border-b-0 active:translate-y-[2px]
+                      ${isCorrect ? 'ring-4 ring-yellow-400 z-30 scale-[1.02] border-yellow-500' : ''}
+                      ${isWrong ? 'ring-4 ring-red-500 z-20 shake grayscale border-red-500' : ''}
+                      ${!isCorrect && !isWrong && isGameOver ? 'opacity-40 blur-[0.5px]' : ''}
+                    `}
+                  >
+                     {failedImages[index] ? (
+                       <i className="fi fi-rr-picture text-gray-300 text-xl"></i>
+                     ) : (
+                       <img 
+                         src={`https://flagcdn.com/w640/${flagCode}.png`} 
+                         alt="flag" 
+                         className="max-w-[85%] max-h-[85%] w-auto h-auto object-contain drop-shadow-sm select-none pointer-events-none"
+                         onError={() => setFailedImages(p => ({...p, [index]: true}))} 
+                         loading="lazy"
+                       />
+                     )}
+
+                     {isCorrect && (
+                        <div className="absolute -top-2 -right-2 bg-yellow-400 text-white rounded-full p-1 shadow-sm animate-pop-in z-40">
+                           <i className="fi fi-rr-star text-xs"></i>
+                        </div>
+                     )}
+                  </button>
+               );
             })}
-          </div>
-        </div>
+         </div>
       </div>
+
     </div>
   );
 };

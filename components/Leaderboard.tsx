@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Trophy, Crown, Calendar, Search, Brain, Star, Globe, WifiOff, Loader2, Share2, Medal } from 'lucide-react';
+import { ChevronLeft, Search, Globe, Calendar, Loader2, WifiOff, Trophy, Cloud, Sun, Flower2, Trees } from 'lucide-react';
 import { playSound } from '../utils/sound';
 import { Difficulty, GameMode, ScoreEntry } from '../types';
 import { getLocalHighScores, getGlobalHighScores } from '../utils/storage';
@@ -10,6 +10,39 @@ interface LeaderboardProps {
   onBack: () => void;
   playerName: string;
 }
+
+// --- DECORATION COMPONENTS ---
+const CloudDecor = ({ className, delay = 0 }: { className?: string, delay?: number }) => (
+  <div 
+    className={`absolute text-white/60 pointer-events-none animate-pulse ${className}`} 
+    style={{ animationDelay: `${delay}s`, animationDuration: '6s' }}
+  >
+    <Cloud fill="currentColor" size={64} strokeWidth={0} className="filter drop-shadow-sm" />
+  </div>
+);
+
+const NatureDecor = () => (
+  <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+     {/* Sun */}
+     <div className="absolute top-[-20px] right-[-20px] text-yellow-300 animate-spin-slow opacity-80">
+        <Sun size={120} fill="currentColor" strokeWidth={0} />
+     </div>
+     
+     {/* Clouds */}
+     <CloudDecor className="top-[5%] -left-10 opacity-70 scale-125" delay={0} />
+     <CloudDecor className="top-[15%] right-[-30px] opacity-50 scale-110" delay={2} />
+     
+     {/* Ground Elements (Bottom) */}
+     <div className="absolute bottom-0 w-full flex justify-between px-4 opacity-40 text-emerald-600">
+        <div className="transform -translate-x-4 translate-y-4">
+           <Trees size={80} fill="currentColor" strokeWidth={0} />
+        </div>
+        <div className="transform translate-x-4 translate-y-2">
+           <Flower2 size={60} fill="#f472b6" strokeWidth={0} className="text-pink-500" />
+        </div>
+     </div>
+  </div>
+);
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack, playerName }) => {
   const { t } = useLanguage();
@@ -36,6 +69,9 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack, playerName }) 
     let isMounted = true;
     const fetchData = async () => {
       setIsLoading(true);
+      // Reset scores visual to show loading properly
+      setScores([]); 
+      
       const localData = getLocalHighScores(mode, difficulty);
       if (isMounted) setScores(localData);
 
@@ -61,237 +97,204 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack, playerName }) 
     }).replace('.', ':');
   };
 
-  const handleShareRank = async (entry: ScoreEntry, index: number) => {
-    playSound('click');
-    const msg = t.leaderboard.shareRankMsg
-      .replace('{rank}', (index + 1).toString())
-      .replace('{mode}', mode.toUpperCase())
-      .replace('{diff}', difficulty.toUpperCase());
-
-    const url = "https://detektifbendera.vercel.app/";
-    const fullText = `${msg} ${url}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Detektif Bendera Ranking',
-          text: msg,
-          url: url
-        });
-      } catch (e) { console.log(e); }
-    } else {
-      navigator.clipboard.writeText(fullText);
-      alert("Text copied!");
-    }
-  };
-
-  // KONFIGURASI DESAIN KARTU BERDASARKAN PERINGKAT
-  const getRankConfig = (index: number) => {
-    // RANK 1: PALING MEWAH (GOLD + GLOW + BIGGER)
-    if (index === 0) return {
-      card: 'bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-500 border-b-[6px] border-amber-700 shadow-[0_10px_20px_rgba(245,158,11,0.5)] transform scale-105 z-30 ring-4 ring-yellow-200/50',
-      crownColor: 'text-white drop-shadow-md',
-      textColor: 'text-amber-950',
-      scoreColor: 'text-amber-900 drop-shadow-sm',
-      rankText: 'text-amber-800',
-      icon: <Trophy size={32} className="text-yellow-100 drop-shadow-md animate-bounce" strokeWidth={2.5} />,
-      isTop3: true
-    };
-    // RANK 2: MEWAH (SILVER)
-    if (index === 1) return {
-      card: 'bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 border-b-[6px] border-slate-600 shadow-lg z-20',
-      crownColor: 'text-white drop-shadow-md',
-      textColor: 'text-slate-900',
-      scoreColor: 'text-slate-800',
-      rankText: 'text-slate-700',
-      icon: <Medal size={28} className="text-slate-100 drop-shadow-md" strokeWidth={2.5} />,
-      isTop3: true
-    };
-    // RANK 3: CUKUP MEWAH (BRONZE)
-    if (index === 2) return {
-      card: 'bg-gradient-to-br from-orange-200 via-orange-300 to-orange-400 border-b-[6px] border-orange-700 shadow-lg z-10',
-      crownColor: 'text-white drop-shadow-md',
-      textColor: 'text-orange-950',
-      scoreColor: 'text-orange-900',
-      rankText: 'text-orange-800',
-      icon: <Medal size={28} className="text-orange-100 drop-shadow-md" strokeWidth={2.5} />,
-      isTop3: true
-    };
-    // RANK 4+: BIASA SAJA (CLEAN)
-    return {
-      card: 'bg-white border-b-[3px] border-gray-100 text-gray-700 shadow-sm hover:shadow-md hover:scale-[1.01] hover:border-sky-200',
-      crownColor: '', 
-      textColor: 'text-gray-700',
-      scoreColor: 'text-sky-600',
-      rankText: 'text-gray-500',
-      icon: null,
-      isTop3: false
-    };
-  };
+  // ASSETS DARI REFERENSI
+  const RANK_ICONS = [
+    "https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/pertama.svg",
+    "https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/kedua.svg",
+    "https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/ketiga.svg"
+  ];
 
   return (
-    <div className="min-h-[100dvh] bg-[#f0f9ff] flex flex-col items-center p-0 font-sans relative overflow-hidden">
+    <div className="fixed inset-0 w-full h-[100dvh] bg-gradient-to-br from-sky-300 via-blue-200 to-indigo-200 flex flex-col font-sans overflow-hidden">
       
-      {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-sky-400 to-sky-200 rounded-b-[3rem] z-0 shadow-lg"></div>
-      <div className="absolute top-10 right-10 opacity-20 animate-spin-slow"><Star size={120} fill="white" className="text-white" /></div>
-      <div className="absolute top-20 left-10 opacity-20 animate-pulse"><Crown size={80} fill="white" className="text-white" /></div>
+      {/* Background Decorations */}
+      <NatureDecor />
 
-      {/* Header Container */}
-      <div className="w-full max-w-lg z-10 flex flex-col items-center pt-4 sm:pt-6 px-4">
+      {/* --- HEADER SECTION (FIXED) --- */}
+      <div className="relative pt-4 px-4 pb-2 z-20 shrink-0 flex flex-col gap-3 max-w-xl mx-auto w-full">
         
-        {/* Navigation Bar */}
-        <div className="w-full flex items-center justify-between mb-4 sm:mb-6">
-           <button 
-            onClick={() => { playSound('click'); onBack(); }}
-            className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white rounded-2xl shadow-md active:scale-95 transition-all border-b-4 border-gray-200 active:border-b-0 active:translate-y-1"
-           >
-            <ChevronLeft size={24} className="text-gray-600" />
-           </button>
-           
-           <div className="bg-white/20 backdrop-blur-md px-4 sm:px-6 py-2 rounded-full border border-white/40 shadow-sm flex items-center gap-2">
-             {isLoading && <Loader2 size={16} className="text-white animate-spin" />}
-             <h1 className="text-lg sm:text-xl font-black text-white uppercase tracking-wider flex items-center gap-2 drop-shadow-md font-titan">
-               <Globe size={20} className="text-white" /> {t.leaderboard.title}
-             </h1>
-           </div>
-           
-           <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
-             {!isOnline && <WifiOff className="text-white/70" size={20} />}
-           </div> 
+        {/* Top Bar */}
+        <div className="relative flex items-center justify-center mb-1">
+            <button 
+                onClick={() => { playSound('click'); onBack(); }}
+                className="absolute left-0 w-10 h-10 md:w-12 md:h-12 bg-white rounded-2xl border-b-4 border-gray-200 flex items-center justify-center shadow-lg active:border-b-0 active:translate-y-1 transition-all z-10 text-sky-500"
+            >
+                <ChevronLeft size={28} strokeWidth={4} />
+            </button>
+            
+            <div className="bg-[#ef4444] text-white px-6 md:px-8 py-2 rounded-xl border-b-4 border-[#b91c1c] shadow-lg flex items-center gap-3">
+                <Globe size={24} className="text-yellow-300 animate-spin-slow" strokeWidth={3} />
+                <h1 className="font-display font-extrabold text-xl md:text-2xl uppercase tracking-wider drop-shadow-sm">
+                    {t.leaderboard.title}
+                </h1>
+            </div>
+
+            <div className="absolute right-0 w-12 h-12 flex items-center justify-center">
+                {!isOnline && <WifiOff className="text-white/80 drop-shadow-md" />}
+            </div>
         </div>
 
-        {/* --- MAIN TABS (MODE) --- */}
-        <div className="w-full bg-white p-1 rounded-2xl shadow-md flex mb-4 border-b-4 border-gray-200">
-           <button
-             onClick={() => { playSound('click'); setMode('difference'); }}
-             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-black text-xs sm:text-sm transition-all active:scale-95
-               ${mode === 'difference' 
-                 ? 'bg-sky-500 text-white shadow-sm ring-2 ring-sky-200' 
-                 : 'text-gray-400 hover:bg-gray-50'}
-             `}
-           >
-             <Search size={16} /> {t.leaderboard.modeDiff}
-           </button>
-           <button
-             onClick={() => { playSound('click'); setMode('quiz'); }}
-             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-black text-xs sm:text-sm transition-all active:scale-95
-               ${mode === 'quiz' 
-                 ? 'bg-indigo-500 text-white shadow-sm ring-2 ring-indigo-200' 
-                 : 'text-gray-400 hover:bg-gray-50'}
-             `}
-           >
-             <Brain size={16} /> {t.leaderboard.modeQuiz}
-           </button>
-        </div>
+        {/* CONTROLS CONTAINER (Glassmorphism) */}
+        <div className="bg-white/40 backdrop-blur-md rounded-3xl p-2 border-2 border-white/50 shadow-lg">
+            
+            {/* Mode Selector */}
+            <div className="flex bg-black/5 rounded-2xl p-1 mb-2 relative">
+                <button
+                    onClick={() => { playSound('click'); setMode('difference'); }}
+                    className={`flex-1 py-2 rounded-xl flex items-center justify-center gap-2 font-display font-bold text-xs md:text-sm uppercase tracking-wide transition-all duration-300 ${
+                        mode === 'difference' 
+                        ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-md scale-[1.02]' 
+                        : 'text-gray-600 hover:bg-white/50'
+                    }`}
+                >
+                    <Search size={16} strokeWidth={3} /> {t.leaderboard.modeDiff}
+                </button>
+                <button
+                    onClick={() => { playSound('click'); setMode('quiz'); }}
+                    className={`flex-1 py-2 rounded-xl flex items-center justify-center gap-2 font-display font-bold text-xs md:text-sm uppercase tracking-wide transition-all duration-300 ${
+                        mode === 'quiz' 
+                        ? 'bg-gradient-to-r from-indigo-400 to-purple-500 text-white shadow-md scale-[1.02]' 
+                        : 'text-gray-600 hover:bg-white/50'
+                    }`}
+                >
+                    <Globe size={16} strokeWidth={3} /> {t.leaderboard.modeQuiz}
+                </button>
+            </div>
 
-        {/* --- SUB TABS (DIFFICULTY) --- */}
-        <div className="flex gap-2 mb-4 w-full overflow-x-auto pb-2 px-1 no-scrollbar">
-           {(['easy', 'medium', 'hard'] as Difficulty[]).map((d) => (
-             <button
-               key={d}
-               onClick={() => { playSound('click'); setDifficulty(d); }}
-               className={`
-                 flex-1 py-2 rounded-xl font-bold capitalize transition-all text-xs sm:text-sm whitespace-nowrap shadow-sm border-b-4 active:border-b-0 active:translate-y-1
-                 ${difficulty === d && d === 'easy' ? 'bg-green-500 text-white border-green-700' : ''}
-                 ${difficulty === d && d === 'medium' ? 'bg-blue-500 text-white border-blue-700' : ''}
-                 ${difficulty === d && d === 'hard' ? 'bg-purple-500 text-white border-purple-700' : ''}
-                 ${difficulty !== d ? 'bg-white text-gray-400 border-gray-200' : ''}
-               `}
-             >
-               {d === 'easy' ? t.leaderboard.diffEasy : d === 'medium' ? t.leaderboard.diffMedium : t.leaderboard.diffHard}
-             </button>
-           ))}
+            {/* Difficulty Selector */}
+            <div className="flex gap-2">
+                 {(['easy', 'medium', 'hard'] as Difficulty[]).map((d) => (
+                    <button
+                        key={d}
+                        onClick={() => { playSound('click'); setDifficulty(d); }}
+                        className={`
+                            flex-1 py-2 rounded-xl font-display font-bold text-xs uppercase tracking-wider shadow-sm border-b-[3px] active:border-b-0 active:translate-y-[3px] transition-all
+                            ${difficulty === d 
+                                ? d === 'easy' 
+                                    ? 'bg-gradient-to-b from-green-400 to-emerald-500 border-emerald-700 text-white ring-2 ring-white' 
+                                    : d === 'medium'
+                                        ? 'bg-gradient-to-b from-blue-400 to-indigo-500 border-indigo-700 text-white ring-2 ring-white'
+                                        : 'bg-gradient-to-b from-pink-400 to-rose-500 border-rose-700 text-white ring-2 ring-white'
+                                : 'bg-white text-gray-400 border-gray-200 hover:bg-gray-50'}
+                        `}
+                    >
+                        {d === 'easy' ? t.leaderboard.diffEasy : d === 'medium' ? t.leaderboard.diffMedium : t.leaderboard.diffHard}
+                    </button>
+                 ))}
+            </div>
         </div>
 
       </div>
 
-      {/* --- LIST SCORES --- */}
-      <div className="flex-1 w-full max-w-lg overflow-y-auto px-4 pb-20 z-10 no-scrollbar">
-        {scores.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-[2rem] border-4 border-dashed border-gray-200 shadow-sm opacity-80 mt-2">
-                {isLoading ? (
-                  <>
-                     <Loader2 size={48} className="text-sky-300 animate-spin mb-4" />
-                     <h3 className="text-gray-400 font-bold">{t.leaderboard.loading}</h3>
-                  </>
-                ) : (
-                  <>
-                    <Trophy size={64} className="text-gray-200 mb-4" />
-                    <h3 className="text-gray-400 font-bold text-lg">{t.leaderboard.emptyTitle}</h3>
-                    <p className="text-gray-400 text-sm">{t.leaderboard.emptyDesc}</p>
-                  </>
-                )}
-            </div>
-        ) : (
-            <div className="flex flex-col gap-3 pb-8 pt-4">
-                {scores.map((entry, i) => {
-                    const style = getRankConfig(i);
-                    const isCurrentUser = entry.name.trim().toLowerCase() === playerName.trim().toLowerCase();
+      {/* --- SCROLLABLE LIST AREA --- */}
+      <div className="flex-1 w-full overflow-y-auto no-scrollbar relative z-10">
+        <div className="max-w-xl mx-auto px-4 py-2 pb-40 flex flex-col gap-3 min-h-[300px]">
+            
+            {isLoading ? (
+               <div className="flex flex-col items-center justify-center mt-20 gap-4 bg-white/20 backdrop-blur-sm p-8 rounded-3xl border-2 border-white/30">
+                  <Loader2 size={48} className="text-white animate-spin" />
+                  <p className="text-white font-display font-bold tracking-widest animate-pulse text-lg shadow-black/10 drop-shadow-md">{t.leaderboard.loading}</p>
+               </div>
+            ) : scores.length === 0 ? (
+               <div className="bg-white/80 backdrop-blur-md rounded-[2rem] p-8 text-center border-4 border-white shadow-xl mt-4 mx-4">
+                  <Trophy size={64} className="text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-gray-600 font-display font-black text-xl mb-1">{t.leaderboard.emptyTitle}</h3>
+                  <p className="text-gray-400 text-sm font-sans font-medium">{t.leaderboard.emptyDesc}</p>
+               </div>
+            ) : (
+                scores.map((entry, i) => {
+                    const isRank1 = i === 0;
+                    const isRank2 = i === 1;
+                    const isRank3 = i === 2;
+                    const isTop3 = i < 3;
                     
+                    // Card Styling Configuration
+                    let bgClass = "bg-white/95";
+                    let borderClass = "border-b-[4px] border-gray-200";
+                    let nameClass = "text-gray-700";
+                    let scoreClass = "text-sky-600";
+                    let rankBadge = (
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gray-100 border-2 border-gray-200 flex items-center justify-center font-display font-bold text-gray-400 text-lg shadow-inner">
+                            {i + 1}
+                        </div>
+                    );
+
+                    if (isRank1) {
+                        bgClass = "bg-gradient-to-r from-yellow-100 to-amber-50 border-2 border-yellow-300";
+                        borderClass = "border-b-[4px] border-yellow-500 shadow-lg scale-[1.02] z-10";
+                        nameClass = "text-yellow-900";
+                        scoreClass = "text-amber-600";
+                        rankBadge = <img src={RANK_ICONS[0]} alt="1st" className="w-12 h-12 md:w-14 md:h-14 object-contain drop-shadow-md relative -top-3 scale-125" />;
+                    } else if (isRank2) {
+                        bgClass = "bg-gradient-to-r from-slate-100 to-gray-50 border-2 border-slate-300";
+                        borderClass = "border-b-[4px] border-slate-400 shadow-md";
+                        nameClass = "text-slate-800";
+                        scoreClass = "text-slate-600";
+                        rankBadge = <img src={RANK_ICONS[1]} alt="2nd" className="w-10 h-10 md:w-12 md:h-12 object-contain drop-shadow-md relative -top-1" />;
+                    } else if (isRank3) {
+                        bgClass = "bg-gradient-to-r from-orange-100 to-red-50 border-2 border-orange-200";
+                        borderClass = "border-b-[4px] border-orange-400 shadow-md";
+                        nameClass = "text-orange-900";
+                        scoreClass = "text-orange-700";
+                        rankBadge = <img src={RANK_ICONS[2]} alt="3rd" className="w-10 h-10 md:w-12 md:h-12 object-contain drop-shadow-md relative -top-1" />;
+                    }
+
                     return (
-                      <div 
-                        key={i} 
-                        className={`
-                          relative rounded-2xl p-3 sm:p-4 flex items-center transition-all duration-300 animate-pop-in group overflow-hidden
-                          ${style.card}
-                        `}
-                        style={{ animationDelay: `${i * 50}ms` }}
-                      >
-                         {/* Pattern Overlay for Rank 1 only */}
-                         {i === 0 && (
-                           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,white_2px,transparent_2px)] bg-[length:12px_12px] pointer-events-none"></div>
-                         )}
-
-                         {/* Rank Indicator */}
-                         <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mr-3 sm:mr-4 shrink-0 z-10">
-                            {style.isTop3 ? (
-                              <div className="flex flex-col items-center justify-center">
-                                {style.icon}
-                                <span className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl sm:text-2xl mt-1 ${style.rankText}`}>
-                                  {i + 1}
-                                </span>
-                              </div>
-                            ) : (
-                              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-50 flex items-center justify-center border-2 border-gray-200 font-black text-gray-500 text-sm sm:text-base shadow-inner">
-                                {i + 1}
-                              </div>
-                            )}
-                         </div>
-
-                         {/* User Info */}
-                         <div className="flex-1 min-w-0 z-10">
-                            <p className={`font-black text-base sm:text-lg truncate uppercase tracking-tight ${style.textColor}`}>
-                              {entry.name}
-                            </p>
-                            <div className={`flex items-center gap-1 text-[10px] font-bold opacity-80 ${style.textColor}`}>
-                                <Calendar size={10} />
-                                <span>{formatDate(entry.date)}</span>
+                        <div 
+                            key={`${entry.name}-${i}`}
+                            className={`
+                                relative w-full rounded-2xl p-3 flex items-center transform transition-all duration-300 animate-slide-down
+                                ${bgClass} ${borderClass}
+                            `}
+                            style={{ animationDelay: `${i * 50}ms` }}
+                        >
+                            {/* Rank Badge */}
+                            <div className={`shrink-0 flex items-center justify-center mr-3 ${isRank1 ? 'w-14' : 'w-10'}`}>
+                                {rankBadge}
                             </div>
-                         </div>
 
-                         {/* Score & Share */}
-                         <div className="flex flex-col items-end gap-1 z-10">
-                            <div 
-                                className={`text-xl sm:text-3xl font-black font-titan tracking-wide ${style.scoreColor}`}
-                            >
+                            {/* Player Info */}
+                            <div className="flex-1 min-w-0">
+                                <h3 className={`font-display font-bold text-base md:text-lg uppercase truncate leading-tight ${nameClass}`}>
+                                    {entry.name}
+                                </h3>
+                                <div className="flex items-center gap-1 text-[10px] font-bold font-sans text-gray-400/80">
+                                    <Calendar size={10} /> {formatDate(entry.date)}
+                                </div>
+                            </div>
+
+                            {/* Score */}
+                            <div className={`text-lg md:text-2xl font-black font-display ${scoreClass} drop-shadow-sm`}>
                                 {entry.score}
                             </div>
-                            {isCurrentUser && (
-                              <button 
-                                onClick={() => handleShareRank(entry, i)}
-                                className="text-gray-400 hover:text-indigo-500 p-1.5 bg-white/60 backdrop-blur-sm rounded-full active:scale-95 transition-all shadow-sm"
-                                title={t.leaderboard.btnShare}
-                              >
-                                <Share2 size={16} />
-                              </button>
-                            )}
-                         </div>
-                      </div>
+                        </div>
                     );
-                })}
+                })
+            )}
+
+            {/* Bottom Decoration: Achievement Icon */}
+            <div className="mt-8 flex flex-col items-center justify-center relative z-20">
+                 <div className="relative hover:scale-110 transition-transform duration-300 group cursor-pointer">
+                    {/* Glow effect */}
+                    <div className="absolute inset-0 bg-yellow-300 blur-2xl opacity-40 rounded-full animate-pulse group-hover:opacity-60"></div>
+                    
+                    <img 
+                        src="https://cdn-icons-png.flaticon.com/512/12282/12282314.png" 
+                        alt="Achievement"
+                        className="w-20 h-20 md:w-24 md:h-24 object-contain drop-shadow-[0_10px_10px_rgba(0,0,0,0.2)] relative z-10"
+                    />
+                    
+                    {/* Particle hints */}
+                    <div className="absolute -top-2 -right-2 w-2 h-2 bg-white rounded-full animate-ping"></div>
+                    <div className="absolute top-0 -left-2 w-1.5 h-1.5 bg-yellow-200 rounded-full animate-pulse"></div>
+                 </div>
+                 <div className="mt-4 bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/30">
+                    <p className="text-white font-bold text-[10px] font-sans tracking-widest uppercase text-shadow-sm">
+                        {t.mainMenu.footer}
+                    </p>
+                 </div>
             </div>
-        )}
+        </div>
       </div>
     </div>
   );

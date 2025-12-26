@@ -4,7 +4,8 @@ import { MainMenu } from './components/MainMenu';
 import { GameScreen } from './components/GameScreen';
 import { QuizScreen } from './components/QuizScreen';
 import { ResultModal } from './components/ResultModal';
-import { LevelSelect } from './components/LevelSelect';
+import { LevelSelectDifference } from './components/LevelSelectDifference';
+import { LevelSelectQuiz } from './components/LevelSelectQuiz';
 import { Leaderboard } from './components/Leaderboard';
 import { NameInputModal } from './components/NameInputModal';
 import { InstallWizard } from './components/InstallWizard';
@@ -24,18 +25,11 @@ function AppContent() {
   const { showNotification } = useNotification();
   
   // App Setup State
-  // Logic: Only show wizard if PWA (standalone) AND setup not complete.
-  // If Browser, skip wizard logic entirely (isSetupComplete = true).
   const [isSetupComplete, setIsSetupComplete] = useState<boolean>(() => {
-    // Detect PWA Standalone Mode
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
-    
-    // If NOT standalone (it's a browser tab), assume setup is done (skip wizard)
     if (!isStandalone) {
       return true;
     }
-
-    // If PWA, check localStorage
     return localStorage.getItem('db_setup_complete') === 'true';
   });
 
@@ -53,39 +47,61 @@ function AppContent() {
   const [cumulativeScore, setCumulativeScore] = useState(0); 
   const [isLevelPassed, setIsLevelPassed] = useState(false);
 
-  // Unlocked levels state
-  const [unlockedState, setUnlockedState] = useState({
+  // --- INDEPENDENT UNLOCK STATES ---
+  const [unlockedDiff, setUnlockedDiff] = useState({
     easy: 1,
     medium: 1,
     hard: 1
   });
 
+  const [unlockedQuiz, setUnlockedQuiz] = useState({
+    easy: 1,
+    medium: 1,
+    hard: 1
+  });
+
+  // Load Unlocked Levels from LocalStorage on mount
+  useEffect(() => {
+    try {
+      const savedDiff = localStorage.getItem('unlocked_diff');
+      if (savedDiff) setUnlockedDiff(JSON.parse(savedDiff));
+
+      const savedQuiz = localStorage.getItem('unlocked_quiz');
+      if (savedQuiz) setUnlockedQuiz(JSON.parse(savedQuiz));
+    } catch (e) {
+      console.error("Failed to load progress", e);
+    }
+  }, []);
+
+  // Save Progress helpers
+  const updateDiffProgress = (diff: Difficulty, level: number) => {
+    const newState = { ...unlockedDiff, [diff]: level };
+    setUnlockedDiff(newState);
+    localStorage.setItem('unlocked_diff', JSON.stringify(newState));
+  };
+
+  const updateQuizProgress = (diff: Difficulty, level: number) => {
+    const newState = { ...unlockedQuiz, [diff]: level };
+    setUnlockedQuiz(newState);
+    localStorage.setItem('unlocked_quiz', JSON.stringify(newState));
+  };
+
   // Global High Score Tracking for Notifications
   const globalTopScoreRef = useRef(0);
 
-  // Setup Global Listeners
   useEffect(() => {
-    // We assume browser users are "setup complete" by default logic above,
-    // so this runs for everyone, but Wizard only showed for PWA.
-    
-    // 1. Fetch initial top score
     fetchCurrentTopScore().then(score => {
       globalTopScoreRef.current = score;
-      
-      // 2. Subscribe to realtime updates
       const unsubscribe = subscribeToGlobalRecords(score, (name, newScore, mode) => {
         if (newScore > globalTopScoreRef.current) {
           globalTopScoreRef.current = newScore;
-          // Send In-Game Notification
           const title = lang === 'id' ? "Rekor Baru!" : "New Record!";
           const msg = lang === 'id' 
             ? `${name} mencetak skor ${newScore}!`
             : `${name} just scored ${newScore}!`;
-          
           showNotification(title, msg, 'record');
         }
       });
-
       return () => unsubscribe();
     });
   }, [lang, showNotification]);
@@ -94,10 +110,8 @@ function AppContent() {
   useEffect(() => {
     if (lang === 'id') {
       document.title = "Detektif Bendera - Game Edukasi Anak";
-      document.querySelector('meta[name="description"]')?.setAttribute('content', 'Mainkan game edukasi Detektif Bendera. Tebak nama negara dan cari perbedaan bendera. Seru, mendidik, dan gratis untuk anak Indonesia!');
     } else {
       document.title = "Detective Flags - Educational Kids Game";
-      document.querySelector('meta[name="description"]')?.setAttribute('content', 'Play Detective Flags educational game. Guess the country flags and find differences. Fun, educational, and free for kids worldwide!');
     }
   }, [lang]);
 
@@ -127,7 +141,16 @@ function AppContent() {
 
   const handleStartFlow = (diff: Difficulty, mode: GameMode) => {
     setPendingStart({ diff, mode });
-    setShowNameModal(true);
+    if (!playerName) {
+        setShowNameModal(true);
+    } else {
+        // Direct start if name exists
+        setSelectedDifficulty(diff);
+        setSelectedMode(mode);
+        setScreen('LEVEL_SELECT');
+        setPendingStart(null);
+        setCumulativeScore(0);
+    }
   };
 
   const handleNameSubmit = (name: string) => {
@@ -155,15 +178,20 @@ function AppContent() {
     if (passed) {
       setCumulativeScore(prev => prev + levelScore);
       
-      const currentUnlocked = unlockedState[selectedDifficulty];
-      // Logic unlock max 30 for Quiz, 50 for Diff
-      const maxLevels = selectedMode === 'quiz' ? 30 : 50;
-      
-      if (currentLevelIndex + 1 >= currentUnlocked && currentUnlocked < maxLevels) {
-        setUnlockedState(prev => ({
-          ...prev,
-          [selectedDifficulty]: prev[selectedDifficulty] + 1
-        }));
+      const nextLevelIdx = currentLevelIndex + 1;
+      const maxLevels = selectedMode === 'quiz' ? 30 : 50; // Quiz has fewer levels in data currently
+
+      // Update specific mode progress
+      if (selectedMode === 'difference') {
+        const currentUnlocked = unlockedDiff[selectedDifficulty];
+        if (nextLevelIdx + 1 > currentUnlocked && nextLevelIdx < maxLevels) {
+            updateDiffProgress(selectedDifficulty, nextLevelIdx + 1);
+        }
+      } else {
+        const currentUnlocked = unlockedQuiz[selectedDifficulty];
+        if (nextLevelIdx + 1 > currentUnlocked && nextLevelIdx < maxLevels) {
+            updateQuizProgress(selectedDifficulty, nextLevelIdx + 1);
+        }
       }
     }
 
@@ -218,7 +246,6 @@ function AppContent() {
            style={{ backgroundImage: 'radial-gradient(#fbbf24 2px, transparent 2px)', backgroundSize: '32px 32px' }}>
       </div>
       
-      {/* UI Notification Layer */}
       <GameNotificationContainer />
 
       {showNameModal && (
@@ -236,10 +263,20 @@ function AppContent() {
         <Leaderboard onBack={handleGoHome} playerName={playerName} />
       )}
 
-      {screen === 'LEVEL_SELECT' && (
-        <LevelSelect 
+      {/* SEPARATE LEVEL SELECT PAGES */}
+      {screen === 'LEVEL_SELECT' && selectedMode === 'difference' && (
+        <LevelSelectDifference 
           difficulty={selectedDifficulty}
-          unlockedCount={unlockedState[selectedDifficulty]}
+          unlockedCount={unlockedDiff[selectedDifficulty]}
+          onSelectLevel={handleSelectLevel}
+          onBack={handleGoHome}
+        />
+      )}
+
+      {screen === 'LEVEL_SELECT' && selectedMode === 'quiz' && (
+        <LevelSelectQuiz 
+          difficulty={selectedDifficulty}
+          unlockedCount={unlockedQuiz[selectedDifficulty]}
           onSelectLevel={handleSelectLevel}
           onBack={handleGoHome}
         />

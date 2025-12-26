@@ -8,6 +8,8 @@ interface Translation {
     title: string;
     subtitle: string;
     tagline: string;
+    mainTitle1: string;
+    mainTitle2: string;
     btnEasy: string;
     subEasy: string;
     btnMedium: string;
@@ -35,10 +37,12 @@ interface Translation {
   };
   game: {
     level: string;
+    lvl: string;
     mission: string;
     find: string;
     hint: string;
     time: string;
+    timeSuffix: string;
     gameOver: string;
     gameOverDesc: string;
   };
@@ -59,6 +63,7 @@ interface Translation {
     btnHome: string;
     btnRetry: string;
     btnShare: string;
+    linkCopied: string;
     shareMsgScore: string;
   };
   levelSelect: {
@@ -83,10 +88,14 @@ interface Translation {
     placeholder: string;
     error: string;
     btnStart: string;
+    welcomeBack: string;
+    nameAvailable: string;
+    btnContinue: string;
   };
   about: {
     title: string;
     dev: string;
+    job: string;
     assets: string;
     icons: string;
     flags: string;
@@ -100,6 +109,7 @@ interface Translation {
   };
   changelog: {
     title: string;
+    latest: string;
     btnClose: string;
     v1_5: string;
     v1_4: string;
@@ -132,6 +142,8 @@ const translations: Record<Language, Translation> = {
       title: "DETEKTIF",
       subtitle: "BENDERA",
       tagline: "Belajar Mengenal Negara dengan Cara Seru",
+      mainTitle1: "DETEKTIF",
+      mainTitle2: "BENDERA",
       btnEasy: "Mudah",
       subEasy: "Santai & Gampang",
       btnMedium: "Sedang",
@@ -159,10 +171,12 @@ const translations: Record<Language, Translation> = {
     },
     game: {
       level: "Level",
+      lvl: "LVL",
       mission: "Misi Pencarian",
       find: "Temukan",
       hint: "Bantuan",
       time: "DETIK",
+      timeSuffix: "s",
       gameOver: "Waktu Habis!",
       gameOverDesc: "Kamu kehabisan waktu."
     },
@@ -183,6 +197,7 @@ const translations: Record<Language, Translation> = {
       btnHome: "Kembali ke Menu",
       btnRetry: "Coba Lagi",
       btnShare: "Bagikan",
+      linkCopied: "Tautan disalin!",
       shareMsgScore: "Saya mendapatkan Skor {score} di game Detektif Bendera mode {mode} {diff}. Ayo kejar saya!"
     },
     levelSelect: {
@@ -206,11 +221,15 @@ const translations: Record<Language, Translation> = {
       desc: "Isi nama untuk papan peringkat ya!",
       placeholder: "Ketik namamu...",
       error: "Nama tidak boleh kosong!",
-      btnStart: "Mulai Main"
+      btnStart: "Mulai Main",
+      welcomeBack: "Selamat datang kembali!",
+      nameAvailable: "Nama tersedia",
+      btnContinue: "Lanjut Main"
     },
     about: {
       title: "Tentang Game",
       dev: "Pengembang",
+      job: "Web Design & Develop Profesional",
       assets: "Sumber Aset",
       icons: "Ikon & UI",
       flags: "Gambar Bendera",
@@ -224,6 +243,7 @@ const translations: Record<Language, Translation> = {
     },
     changelog: {
       title: "Riwayat Update",
+      latest: "Terbaru",
       btnClose: "Kembali",
       v1_5: "Fitur Auto Update, Menu Changelog, Perbaikan Bug Duplikat Nama",
       v1_4: "Fitur Share Ranking, Pengaturan Suara (BGM/SFX), Suara Menang/Kalah Baru",
@@ -254,6 +274,8 @@ const translations: Record<Language, Translation> = {
       title: "DETECTIVE",
       subtitle: "FLAGS",
       tagline: "Learn Countries in a Fun Way",
+      mainTitle1: "DETECTIVE",
+      mainTitle2: "FLAGS",
       btnEasy: "Easy",
       subEasy: "Relaxed & Simple",
       btnMedium: "Medium",
@@ -281,10 +303,12 @@ const translations: Record<Language, Translation> = {
     },
     game: {
       level: "Level",
+      lvl: "LVL",
       mission: "Search Mission",
       find: "Find",
       hint: "Hint",
       time: "SECONDS",
+      timeSuffix: "s",
       gameOver: "Time's Up!",
       gameOverDesc: "You ran out of time."
     },
@@ -305,6 +329,7 @@ const translations: Record<Language, Translation> = {
       btnHome: "Back to Menu",
       btnRetry: "Try Again",
       btnShare: "Share",
+      linkCopied: "Link copied!",
       shareMsgScore: "I scored {score} in Flag Detective game mode {mode} {diff}. Catch me if you can!"
     },
     levelSelect: {
@@ -328,11 +353,15 @@ const translations: Record<Language, Translation> = {
       desc: "Enter your name for the leaderboard!",
       placeholder: "Type your name...",
       error: "Name cannot be empty!",
-      btnStart: "Start Game"
+      btnStart: "Start Game",
+      welcomeBack: "Welcome back!",
+      nameAvailable: "Name available",
+      btnContinue: "Continue"
     },
     about: {
       title: "About Game",
       dev: "Developer",
+      job: "Professional Web Design & Develop",
       assets: "Credits & Assets",
       icons: "Icons & UI",
       flags: "Flag Images",
@@ -346,6 +375,7 @@ const translations: Record<Language, Translation> = {
     },
     changelog: {
       title: "Update History",
+      latest: "Latest",
       btnClose: "Back",
       v1_5: "Auto Update Feature, Changelog Menu, Name Duplicate Fix",
       v1_4: "Share Ranking Feature, Sound Settings (BGM/SFX), New Win/Lose Sounds",

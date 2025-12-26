@@ -61,7 +61,7 @@ export const GameNotificationContainer: React.FC = () => {
               pointer-events-auto
               relative w-full max-w-sm rounded-2xl border-l-[8px] ${style.border} ${style.bg}
               shadow-[0_8px_30px_rgba(0,0,0,0.12)] p-3 flex items-center gap-3
-              animate-slide-down transition-all duration-300 transform
+              animate-slide-down transition-all duration-300 transform font-sans
             `}
           >
             {/* Icon Bubble */}
@@ -71,7 +71,7 @@ export const GameNotificationContainer: React.FC = () => {
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <h4 className={`font-titan text-lg leading-none ${style.text} mb-1 drop-shadow-sm`}>
+              <h4 className={`font-display font-extrabold text-lg leading-none ${style.text} mb-1 drop-shadow-sm`}>
                 {note.title}
               </h4>
               <p className={`text-xs font-bold opacity-90 leading-tight ${style.text}`}>

@@ -33,7 +33,13 @@ export interface ScoreEntry {
 export interface GameState {
   currentLevelId: number;
   score: number;
-  unlockedLevels: {
+  // Separate unlock states for each mode
+  unlockedDiff: {
+    easy: number;
+    medium: number;
+    hard: number;
+  };
+  unlockedQuiz: {
     easy: number;
     medium: number;
     hard: number;

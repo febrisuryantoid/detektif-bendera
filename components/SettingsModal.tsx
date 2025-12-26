@@ -40,7 +40,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
       <div className="relative w-[90%] max-w-xs bg-white rounded-[2rem] border-[6px] border-indigo-500 shadow-2xl overflow-hidden">
         
         <div className="bg-indigo-500 p-4 text-center relative shrink-0">
-          <h2 className="text-xl font-black text-white font-titan tracking-wider uppercase drop-shadow-md">
+          <h2 className="text-xl font-extrabold text-white font-display tracking-wider uppercase drop-shadow-md">
             {t.settings.title}
           </h2>
           <button onClick={() => { playSound('click'); onClose(); }} className="absolute top-4 right-4 text-white hover:scale-110">
@@ -48,7 +48,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
           </button>
         </div>
 
-        <div className="p-5 space-y-5">
+        <div className="p-5 space-y-5 font-sans">
           {/* MUSIC */}
           <div className="flex items-center justify-between">
              <div className="flex items-center gap-3">
@@ -83,7 +83,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
                     key={tId}
                     onClick={() => handleChangeTrack(tId)}
                     className={`
-                      py-1.5 rounded-lg text-[10px] font-black uppercase border-b-2 active:border-b-0 active:translate-y-0.5 transition-all
+                      py-1.5 rounded-lg text-[10px] font-bold uppercase border-b-2 active:border-b-0 active:translate-y-0.5 transition-all
                       ${track === tId ? 'bg-purple-500 text-white border-purple-700 shadow-md' : 'bg-gray-100 text-gray-500 border-gray-200'}
                     `}
                   >
@@ -94,10 +94,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
           </div>
         </div>
 
-        <div className="p-4 bg-gray-50 border-t-2 border-gray-100 shrink-0">
+        <div className="p-4 bg-gray-50 border-t-2 border-gray-100 shrink-0 font-sans">
            <button 
              onClick={() => { playSound('click'); onClose(); }}
-             className="w-full bg-indigo-500 text-white font-black py-3 rounded-xl border-b-4 border-indigo-700 active:border-b-0 active:translate-y-1 transition-all shadow-md btn-3d"
+             className="w-full bg-indigo-500 text-white font-bold py-3 rounded-xl border-b-4 border-indigo-700 active:border-b-0 active:translate-y-1 transition-all shadow-md btn-3d"
            >
              {t.settings.btnClose}
            </button>

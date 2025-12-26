@@ -98,14 +98,14 @@ export const InstallWizard: React.FC<InstallWizardProps> = ({ onComplete }) => {
               <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                  <img src="https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/icon.png" className="w-16 h-16 object-contain" alt="Icon" />
               </div>
-              <h1 className="text-3xl font-black font-titan mb-2">{t.installWizard.welcome}</h1>
-              <p className="text-indigo-100 font-bold mb-8 leading-relaxed">
+              <h1 className="text-3xl font-extrabold font-display mb-2">{t.installWizard.welcome}</h1>
+              <p className="text-indigo-100 font-medium mb-8 leading-relaxed">
                 {t.installWizard.introDesc} <span className="text-yellow-300">{t.installWizard.introHighlight}</span>!
               </p>
               
               <button 
                 onClick={() => setStep('permissions')}
-                className="w-full bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-black py-4 rounded-2xl shadow-lg transform transition-all active:scale-95 flex items-center justify-center gap-2"
+                className="w-full bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-bold py-4 rounded-2xl shadow-lg transform transition-all active:scale-95 flex items-center justify-center gap-2"
               >
                 {t.installWizard.btnSetup} <Play size={20} fill="currentColor" />
               </button>
@@ -116,8 +116,8 @@ export const InstallWizard: React.FC<InstallWizardProps> = ({ onComplete }) => {
         {step === 'permissions' && (
            <div className="flex flex-col items-center text-center animate-pop-in">
               <ShieldCheck size={64} className="text-emerald-400 mb-4" />
-              <h2 className="text-2xl font-black font-titan mb-2">{t.installWizard.permTitle}</h2>
-              <p className="text-white/80 text-sm mb-6">
+              <h2 className="text-2xl font-extrabold font-display mb-2">{t.installWizard.permTitle}</h2>
+              <p className="text-white/80 text-sm mb-6 font-medium">
                 {t.installWizard.permDesc}
               </p>
 
@@ -140,7 +140,7 @@ export const InstallWizard: React.FC<InstallWizardProps> = ({ onComplete }) => {
 
               <button 
                 onClick={handleRequestPermissions}
-                className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-black py-4 rounded-2xl shadow-lg transform transition-all active:scale-95"
+                className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-4 rounded-2xl shadow-lg transform transition-all active:scale-95"
               >
                 {t.installWizard.btnGrant}
               </button>
@@ -155,7 +155,7 @@ export const InstallWizard: React.FC<InstallWizardProps> = ({ onComplete }) => {
                  <Download size={64} className="text-sky-300 relative z-10 animate-bounce" />
                </div>
                
-               <h2 className="text-2xl font-black font-titan mb-2">{t.installWizard.downloadTitle}</h2>
+               <h2 className="text-2xl font-extrabold font-display mb-2">{t.installWizard.downloadTitle}</h2>
                <p className="text-sky-200 font-bold text-sm mb-8">
                   {t.installWizard.downloadDesc}
                </p>
