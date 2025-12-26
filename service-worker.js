@@ -11,8 +11,8 @@ const PRECACHE_URLS = [
   // External Libraries (PENTING untuk Offline)
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Titan+One&display=swap',
-  // App Icon (Agar ikon tetap ada saat offline)
-  'https://cdn-icons-png.flaticon.com/512/4322/4322992.png'
+  // App Icon (Lokal)
+  './icon.png'
 ];
 
 // Install Handler
