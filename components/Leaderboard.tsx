@@ -8,9 +8,10 @@ import { useLanguage } from '../utils/i18n';
 
 interface LeaderboardProps {
   onBack: () => void;
+  playerName: string;
 }
 
-export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
+export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack, playerName }) => {
   const { t } = useLanguage();
   const [mode, setMode] = useState<GameMode>('difference');
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
@@ -197,7 +198,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
       </div>
 
       {/* --- LIST SCORES --- */}
-      <div className="flex-1 w-full max-w-lg overflow-y-auto px-4 pb-20 z-10 custom-scrollbar">
+      {/* Changed custom-scrollbar to no-scrollbar */}
+      <div className="flex-1 w-full max-w-lg overflow-y-auto px-4 pb-20 z-10 no-scrollbar">
         {scores.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-[2rem] border-4 border-dashed border-gray-200 shadow-sm opacity-80 mt-2">
                 {isLoading ? (
@@ -217,6 +219,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
             <div className="flex flex-col gap-3 pb-8 pt-2">
                 {scores.map((entry, i) => {
                     const style = getRankConfig(i);
+                    const isCurrentUser = entry.name.trim().toLowerCase() === playerName.trim().toLowerCase();
+                    
                     return (
                       <div 
                         key={i} 
@@ -264,13 +268,15 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
                             >
                                 {entry.score}
                             </div>
-                            <button 
-                              onClick={() => handleShareRank(entry, i)}
-                              className="text-gray-400 hover:text-indigo-500 p-1 bg-white/50 rounded-full active:scale-95 transition-all"
-                              title={t.leaderboard.btnShare}
-                            >
-                               <Share2 size={16} />
-                            </button>
+                            {isCurrentUser && (
+                              <button 
+                                onClick={() => handleShareRank(entry, i)}
+                                className="text-gray-400 hover:text-indigo-500 p-1 bg-white/50 rounded-full active:scale-95 transition-all"
+                                title={t.leaderboard.btnShare}
+                              >
+                                <Share2 size={16} />
+                              </button>
+                            )}
                          </div>
                       </div>
                     );

@@ -3,7 +3,7 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#38bdf8" />
     <meta name="description" content="Asah pengetahuan nama Bendera Dunia. Game edukasi seru untuk anak!">
     
@@ -13,14 +13,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Detektif Bendera">
     
-    <!-- IKON BARU: Supabase Storage -->
+    <!-- IKON -->
     <link rel="apple-touch-icon" href="https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/icon.png">
     <link rel="icon" type="image/png" href="https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/icon.png" />
     
     <link rel="manifest" href="./manifest.json" />
     <title>Detektif Bendera</title>
     
-    <!-- Structured Data for Rich Snippets (Game Schema) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -29,23 +28,27 @@
       "alternateName": "Detective Flags",
       "applicationCategory": "GameApplication",
       "operatingSystem": "Any",
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "ratingCount": "1250",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "description": "Game edukasi tebak bendera dan cari perbedaan untuk anak-anak. Belajar geografi dengan cara yang menyenangkan."
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Game edukasi tebak bendera dan cari perbedaan untuk anak-anak."
     }
     </script>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Fredoka', 'sans-serif'],
+              titan: ['Titan One', 'cursive'],
+            },
+            boxShadow: {
+              'glossy': 'inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.1)',
+            }
+          }
+        }
+      }
+    </script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,129 +59,79 @@
         background-color: #f0f9ff;
         user-select: none;
         -webkit-user-select: none;
-        overflow-x: hidden;
-        overflow-y: hidden;
-        touch-action: manipulation; /* Improves touch response */
-      }
-      .font-titan {
-        font-family: 'Titan One', cursive;
+        touch-action: manipulation;
+        overflow: hidden; /* Prevent body scroll, handle inside containers */
+        height: 100dvh; /* Dynamic viewport height */
       }
       
-      /* Hide Scrollbar but keep functionality */
-      .no-scrollbar::-webkit-scrollbar {
-          display: none;
+      #root {
+        height: 100%;
+        width: 100%;
       }
-      .no-scrollbar {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;  /* Firefox */
+      
+      /* UTILITIES */
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 4px; }
+      
+      /* TEXT STROKES */
+      .text-stroke-sm { -webkit-text-stroke: 1px #000; paint-order: stroke fill; }
+      .text-stroke-md { -webkit-text-stroke: 2px #1e3a8a; paint-order: stroke fill; }
+      .text-stroke-lg { -webkit-text-stroke: 4px #1e3a8a; paint-order: stroke fill; }
+      
+      @media (max-width: 640px) {
+        .text-stroke-lg { -webkit-text-stroke: 2.5px #1e3a8a; }
       }
 
-      .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: rgba(0,0,0,0.05);
-        border-radius: 4px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: rgba(0,0,0,0.2);
-        border-radius: 4px;
-      }
-      
-      .text-stroke-3 {
-        -webkit-text-stroke: 3px #000;
-        paint-order: stroke fill;
-      }
-      /* Stroke lebih tipis untuk mobile agar tulisan terbaca */
-      @media (max-width: 640px) {
-        .text-stroke-3 {
-          -webkit-text-stroke: 1.5px #000;
-        }
-      }
-      .text-stroke-2 {
-        -webkit-text-stroke: 1.5px rgba(255,255,255,0.5);
-      }
-      .shake {
-        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-      }
+      /* ANIMATIONS */
+      .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
       @keyframes shake {
         10%, 90% { transform: translate3d(-1px, 0, 0); }
         20%, 80% { transform: translate3d(2px, 0, 0); }
         30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
         40%, 60% { transform: translate3d(4px, 0, 0); }
       }
-      .pop-in {
-        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      }
+      
+      .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
       @keyframes popIn {
         0% { opacity: 0; transform: scale(0.5); }
         100% { opacity: 1; transform: scale(1); }
       }
       
-      .animate-slide-down {
-        animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      }
+      .animate-slide-down { animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
       @keyframes slideDown {
         0% { transform: translateY(-100%); opacity: 0; }
         100% { transform: translateY(0); opacity: 1; }
       }
 
-      .animate-spin-slow {
-        animation: spin 20s linear infinite;
+      .animate-spin-slow { animation: spin 20s linear infinite; }
+      @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      
+      /* DESIGN SYSTEM CLASSES FOR BUTTONS */
+      /* Base 3D Button Style - Adjusted for compact mobile */
+      .btn-3d {
+        box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.1);
+        border-bottom-width: 4px; /* Default for mobile */
+        transition: all 0.1s;
       }
-      @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+      @media (min-width: 768px) {
+        .btn-3d { border-bottom-width: 6px; }
+      }
+      .btn-3d:active {
+        border-bottom-width: 0px;
+        transform: translateY(4px);
       }
       
-      /* --- ANIMASI BENDERA BARU (NO ROTATION) --- */
-
-      /* 1. Horizontal Drift - Geser Kiri Kanan Saja */
+      /* ANIMASI BENDERA BACKGROUND */
       .animate-drift-right { animation: driftRight linear infinite; }
-      .animate-drift-left { animation: driftLeft linear infinite; }
-      
       @keyframes driftRight {
         0% { transform: translateX(-20vw) translateY(0); }
         50% { transform: translateX(50vw) translateY(-20px); }
         100% { transform: translateX(120vw) translateY(0); }
       }
-      
-      @keyframes driftLeft {
-        0% { transform: translateX(120vw) translateY(0); }
-        50% { transform: translateX(50vw) translateY(20px); }
-        100% { transform: translateX(-20vw) translateY(0); }
-      }
-
-      /* 2. Vertical Float Up - Naik ke atas Saja */
-      .animate-float-up { animation: floatUp linear infinite; }
-      @keyframes floatUp {
-        0% { transform: translateY(110vh) translateX(0); }
-        25% { transform: translateY(75vh) translateX(20px); }
-        50% { transform: translateY(50vh) translateX(-20px); }
-        75% { transform: translateY(25vh) translateX(10px); }
-        100% { transform: translateY(-20vh) translateX(0); }
-      }
-
-      /* 3. Orbital - Tetap memutar posisi tapi bendera tegak */
-      .animate-orbit-cw { animation: orbitCW linear infinite; }
-      .animate-orbit-ccw { animation: orbitCCW linear infinite; }
-
-      @keyframes orbitCW {
-        from { transform: rotate(0deg) translateX(150px) rotate(0deg); }
-        to   { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
-      }
-      @keyframes orbitCCW {
-        from { transform: rotate(360deg) translateX(200px) rotate(-360deg); }
-        to   { transform: rotate(0deg) translateX(200px) rotate(0deg); }
-      }
-
-      /* 4. Tumble - Diubah jadi jatuh lurus (Rain) */
-      .animate-tumble { animation: tumble linear infinite; }
-      @keyframes tumble {
-        0% { transform: translateY(-20vh) translateX(0); }
-        100% { transform: translateY(120vh) translateX(20px); }
-      }
-
     </style>
   <script type="importmap">
 {

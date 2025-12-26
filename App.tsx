@@ -233,7 +233,7 @@ function AppContent() {
       )}
 
       {screen === 'LEADERBOARD' && (
-        <Leaderboard onBack={handleGoHome} />
+        <Leaderboard onBack={handleGoHome} playerName={playerName} />
       )}
 
       {screen === 'LEVEL_SELECT' && (

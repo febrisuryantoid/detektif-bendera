@@ -1,6 +1,6 @@
 
-const CACHE_NAME = 'detektif-bendera-v4-core';
-const ASSET_CACHE = 'detektif-bendera-v4-assets';
+const CACHE_NAME = 'detektif-bendera-v5-core';
+const ASSET_CACHE = 'detektif-bendera-v5-assets';
 
 // DAFTAR ASET WAJIB (CORE ASSETS)
 const PRECACHE_URLS = [
@@ -14,7 +14,9 @@ const PRECACHE_URLS = [
 
 // Install Handler
 self.addEventListener('install', event => {
+  // Paksa SW baru untuk segera menggantikan yang lama (langsung masuk fase activate)
   self.skipWaiting();
+  
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -35,7 +37,10 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => {
+      // Segera kontrol semua klien yang terbuka tanpa perlu reload manual
+      return self.clients.claim();
+    })
   );
 });
 
@@ -48,9 +53,27 @@ const isValidResponse = (response) => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // 1. ASSET STRATEGY: CACHE FIRST, FALLBACK NETWORK
-  // Untuk gambar bendera, suara, dan font, kita ingin performa maksimal.
-  // Jika ada di cache, pakai cache. Jika tidak, download lalu simpan.
+  // 1. HTML / ROOT STRATEGY: NETWORK FIRST, FALLBACK CACHE
+  // Ini kunci Auto Update: Selalu coba ambil index.html terbaru dari server.
+  // Jika index.html berubah (karena ada deploy baru), browser akan memuat JS/CSS baru.
+  if (event.request.mode === 'navigate' || url.pathname.endsWith('index.html') || url.pathname === '/') {
+    event.respondWith(
+      fetch(event.request)
+        .then(networkResponse => {
+          return caches.open(CACHE_NAME).then(cache => {
+             cache.put(event.request, networkResponse.clone());
+             return networkResponse;
+          });
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // 2. ASSET STRATEGY: CACHE FIRST, FALLBACK NETWORK
+  // Untuk gambar bendera, suara, font, dll. Performa maksimal.
   if (
     url.hostname.includes('flagcdn.com') || 
     url.hostname.includes('flaticon.com') || 
@@ -78,8 +101,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // 2. CORE STRATEGY: STALE-WHILE-REVALIDATE
-  // Untuk HTML, JS bundle app.
+  // 3. JS/CSS BUNDLE STRATEGY: STALE-WHILE-REVALIDATE
+  // Ambil dari cache dulu biar cepat, tapi update cache di background untuk reload berikutnya.
   event.respondWith(
     caches.open(CACHE_NAME).then(cache => {
       return cache.match(event.request).then(cachedResponse => {

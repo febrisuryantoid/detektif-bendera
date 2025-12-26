@@ -94,6 +94,18 @@ interface Translation {
     fonts: string;
     footer: string;
     btnClose: string;
+    version: string;
+    btnChangelog: string;
+  };
+  changelog: {
+    title: string;
+    btnClose: string;
+    v1_5: string;
+    v1_4: string;
+    v1_3: string;
+    v1_2: string;
+    v1_1: string;
+    v1_0: string;
   };
   installWizard: {
     welcome: string;
@@ -204,7 +216,19 @@ const translations: Record<Language, Translation> = {
       audio: "Audio & SFX",
       fonts: "Font",
       footer: "Game Edukasi Gratis",
-      btnClose: "Tutup"
+      btnClose: "Tutup",
+      version: "Versi",
+      btnChangelog: "Lihat Changelog"
+    },
+    changelog: {
+      title: "Riwayat Update",
+      btnClose: "Kembali",
+      v1_5: "Fitur Auto Update, Menu Changelog, Perbaikan Bug Duplikat Nama",
+      v1_4: "Fitur Share Ranking, Pengaturan Suara (BGM/SFX), Suara Menang/Kalah Baru",
+      v1_3: "Sistem Papan Peringkat Global Realtime & Input Nama",
+      v1_2: "Install Wizard PWA & Optimasi Mode Offline",
+      v1_1: "Penambahan Mode Kuis & Total 150 Level",
+      v1_0: "Rilis Perdana (Mode Cari Perbedaan)"
     },
     installWizard: {
       welcome: "SELAMAT DATANG!",
@@ -313,7 +337,19 @@ const translations: Record<Language, Translation> = {
       audio: "Audio & SFX",
       fonts: "Fonts",
       footer: "Free Educational Game",
-      btnClose: "Close"
+      btnClose: "Close",
+      version: "Version",
+      btnChangelog: "View Changelog"
+    },
+    changelog: {
+      title: "Update History",
+      btnClose: "Back",
+      v1_5: "Auto Update Feature, Changelog Menu, Name Duplicate Fix",
+      v1_4: "Share Ranking Feature, Sound Settings (BGM/SFX), New Win/Lose Sounds",
+      v1_3: "Realtime Global Leaderboard & Name Input System",
+      v1_2: "PWA Install Wizard & Offline Optimization",
+      v1_1: "Added Quiz Mode & Total 150 Levels",
+      v1_0: "Initial Release (Find Difference Mode)"
     },
     installWizard: {
       welcome: "WELCOME!",
