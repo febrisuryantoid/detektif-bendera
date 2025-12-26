@@ -11,6 +11,43 @@ interface MainMenuProps {
   onShowLeaderboard: () => void;
 }
 
+// Komponen Pita SVG yang Rapi & Proporsional
+const RibbonSubtitle = ({ text }: { text: string }) => {
+  return (
+    // REVISI UKURAN: Mengurangi margin top dan scaling pada layar besar agar tidak terlalu jauh dari judul
+    <div className="relative flex items-center justify-center mt-2 md:mt-3 lg:mt-4 filter drop-shadow-xl z-30">
+      
+      {/* Sayap Kiri Pita */}
+      <div className="relative h-10 md:h-12 lg:h-14 flex items-center">
+        <svg className="h-full w-auto text-[#dc2626] -mr-[1px]" viewBox="0 0 40 60" preserveAspectRatio="none">
+          <path d="M0 0 L40 10 L40 50 L0 60 L15 30 Z" fill="currentColor" />
+          <path d="M40 10 L25 10 L40 25 Z" fill="#7f1d1d" /> 
+        </svg>
+      </div>
+
+      {/* Bagian Tengah */}
+      <div className="relative bg-[#dc2626] h-10 md:h-12 lg:h-14 flex items-center px-6 md:px-8 lg:px-10">
+         <div className="absolute top-0 left-0 right-0 h-1 md:h-1.5 bg-[#ef4444]"></div>
+         <div className="absolute bottom-0 left-0 right-0 h-1 md:h-1.5 bg-[#991b1b]"></div>
+         
+         {/* Font size disesuaikan agar pas di dalam pita yang lebih ramping */}
+         <h1 className="text-xl md:text-3xl lg:text-4xl font-titan text-white tracking-widest whitespace-nowrap drop-shadow-md relative -top-[1px]">
+           {text}
+         </h1>
+      </div>
+
+      {/* Sayap Kanan Pita */}
+      <div className="relative h-10 md:h-12 lg:h-14 flex items-center">
+         <svg className="h-full w-auto text-[#dc2626] -ml-[1px]" viewBox="0 0 40 60" preserveAspectRatio="none">
+          <path d="M40 0 L0 10 L0 50 L40 60 L25 30 Z" fill="currentColor" />
+          <path d="M0 10 L15 10 L0 25 Z" fill="#7f1d1d" />
+        </svg>
+      </div>
+
+    </div>
+  );
+};
+
 const MenuButton = ({ 
   onClick, 
   gradient, 
@@ -30,24 +67,38 @@ const MenuButton = ({
     onClick={onClick}
     className={`
       w-full ${gradient} text-white rounded-xl md:rounded-2xl
-      p-2 md:p-4 lg:p-5
-      border-b-[4px] md:border-b-[6px] lg:border-b-[8px] ${shadowColor}
+      /* PADDING: Dibuat lebih compact */
+      p-2 md:p-3
+      
+      /* BORDER: Proporsional */
+      border-b-[4px] md:border-b-[6px] ${shadowColor}
       active:border-b-0 active:translate-y-1
       transition-all duration-150 transform hover:-translate-y-0.5 hover:brightness-110
+      
+      /* LAYOUT FLEX */
       flex flex-row landscape:flex-col items-center landscape:justify-center 
-      gap-3 md:gap-4 landscape:gap-1 lg:landscape:gap-3
-      shadow-md relative z-20 group ring-2 md:ring-4 ring-white/20 
-      h-full min-h-[60px] md:min-h-[100px] lg:min-h-[140px] landscape:min-h-[110px]
+      gap-3 landscape:gap-1 lg:landscape:gap-2
+      
+      shadow-md relative z-20 group ring-2 ring-white/20 
+      
+      /* HEIGHT CONTROL: Ini kunci agar tidak terlalu besar di tablet/desktop */
+      h-full 
+      min-h-[64px]           /* Mobile Portrait */
+      md:min-h-[80px]        /* Tablet Portrait */
+      landscape:min-h-[100px] /* Landscape (Mobile/Tablet/Desktop) - Tidak perlu 140px! */
     `}
   >
-    <div className="bg-white/20 p-1.5 md:p-3 lg:p-4 rounded-lg md:rounded-xl backdrop-blur-sm group-hover:scale-110 transition-transform shadow-inner shrink-0">
+    {/* ICON BOX */}
+    <div className="bg-white/20 p-1.5 md:p-2.5 rounded-lg backdrop-blur-sm group-hover:scale-110 transition-transform shadow-inner shrink-0">
       {icon}
     </div>
+    
+    {/* TEXT CONTENT */}
     <div className="text-left landscape:text-center flex-1 min-w-0 text-shadow-sm leading-none flex flex-col justify-center">
-      <h3 className="text-sm md:text-xl lg:text-3xl font-black tracking-wide uppercase drop-shadow-md font-titan truncate">
+      <h3 className="text-sm md:text-lg lg:text-xl font-black tracking-wide uppercase drop-shadow-md font-titan truncate">
         {title}
       </h3>
-      <p className="text-[10px] md:text-sm lg:text-base font-bold opacity-90 truncate mt-0.5 md:mt-1.5">
+      <p className="text-[10px] md:text-xs lg:text-sm font-bold opacity-90 truncate mt-0.5 md:mt-1">
         {subtitle}
       </p>
     </div>
@@ -125,96 +176,94 @@ export const MainMenu: React.FC<MainMenuProps> = ({ onStart, onShowLeaderboard }
          <div className="absolute top-0 left-0 w-[50vw] h-[50vw] bg-purple-300 rounded-full mix-blend-multiply filter blur-[50px] opacity-50"></div>
          <div className="absolute bottom-0 right-0 w-[50vw] h-[50vw] bg-yellow-200 rounded-full mix-blend-multiply filter blur-[50px] opacity-50"></div>
          {festiveFlags.map((flag, idx) => (
-          <div key={idx} className="absolute opacity-60 w-12 md:w-20 lg:w-32 drop-shadow-md z-0" style={flag.style}>
+          <div key={idx} className="absolute opacity-60 w-12 md:w-20 drop-shadow-md z-0" style={flag.style}>
              <img src={`https://flagcdn.com/w160/${flag.code}.png`} alt="" className="w-full h-full object-contain rounded-sm" />
           </div>
         ))}
       </div>
 
-      {/* TOP ACTIONS - Scaled for Tablet */}
-      <div className="absolute top-2 right-2 md:top-4 md:right-4 z-50 flex gap-2 md:gap-4">
-        <button onClick={() => { playSound('click'); setShowAbout(true); }} className="w-8 h-8 md:w-12 md:h-12 flex items-center justify-center bg-white text-sky-500 rounded-full shadow-md border-b-2 md:border-b-4 border-gray-200 active:border-b-0 active:translate-y-0.5 transition-all">
-          <Info className="w-4 h-4 md:w-6 md:h-6" strokeWidth={3} />
+      {/* TOP ACTIONS */}
+      <div className="absolute top-2 right-2 md:top-6 md:right-6 z-50 flex gap-2 md:gap-3">
+        <button onClick={() => { playSound('click'); setShowAbout(true); }} className="w-9 h-9 md:w-11 md:h-11 flex items-center justify-center bg-white text-sky-500 rounded-full shadow-md border-b-2 md:border-b-4 border-gray-200 active:border-b-0 active:translate-y-0.5 transition-all hover:scale-105">
+          <Info className="w-5 h-5 md:w-6 md:h-6" strokeWidth={3} />
         </button>
-         <button onClick={toggleLanguage} className="w-8 h-8 md:w-12 md:h-12 flex items-center justify-center bg-white text-indigo-500 rounded-full shadow-md border-b-2 md:border-b-4 border-gray-200 active:border-b-0 active:translate-y-0.5 transition-all relative">
-          <Languages className="w-4 h-4 md:w-6 md:h-6" strokeWidth={3} />
-          <div className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 bg-indigo-600 text-white text-[8px] md:text-[10px] font-black px-1 md:px-2 py-0.5 rounded shadow-sm pointer-events-none">{lang.toUpperCase()}</div>
+         <button onClick={toggleLanguage} className="w-9 h-9 md:w-11 md:h-11 flex items-center justify-center bg-white text-indigo-500 rounded-full shadow-md border-b-2 md:border-b-4 border-gray-200 active:border-b-0 active:translate-y-0.5 transition-all relative hover:scale-105">
+          <Languages className="w-5 h-5 md:w-6 md:h-6" strokeWidth={3} />
+          <div className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 bg-indigo-600 text-white text-[8px] md:text-[10px] font-black px-1.5 py-0.5 rounded shadow-sm pointer-events-none">{lang.toUpperCase()}</div>
         </button>
         {deferredPrompt && (
-           <button onClick={() => { playSound('click'); handleInstallClick(); }} className="w-8 h-8 md:w-12 md:h-12 flex items-center justify-center bg-green-500 text-white rounded-full shadow-md border-b-2 md:border-b-4 border-green-700 active:border-b-0 active:translate-y-0.5 transition-all animate-bounce">
-             <Download className="w-4 h-4 md:w-6 md:h-6" strokeWidth={3} />
+           <button onClick={() => { playSound('click'); handleInstallClick(); }} className="w-9 h-9 md:w-11 md:h-11 flex items-center justify-center bg-green-500 text-white rounded-full shadow-md border-b-2 md:border-b-4 border-green-700 active:border-b-0 active:translate-y-0.5 transition-all animate-bounce">
+             <Download className="w-5 h-5 md:w-6 md:h-6" strokeWidth={3} />
            </button>
         )}
       </div>
 
       {/* RESPONSIVE LAYOUT CONTAINER */}
       {/* 
-         DESIGN SYSTEM:
-         - Mobile: gap-4
-         - Tablet: gap-8 (md)
-         - Desktop: gap-10 (lg)
-         - Landscape Mobile: gap-2
+         PERBAIKAN UTAMA DI SINI:
+         - landscape:gap-3 (Rapat di landscape agar muat vertikal)
+         - md:gap-6 (Agak renggang di tablet portrait)
       */}
-      <div className="relative z-30 w-full h-full max-w-7xl mx-auto p-4 md:p-8 lg:p-12 flex flex-col items-center justify-center gap-4 md:gap-8 lg:gap-12 landscape:gap-2 md:landscape:gap-6">
+      <div className="relative z-30 w-full h-full max-w-7xl mx-auto p-4 md:p-6 flex flex-col items-center justify-center gap-3 md:gap-6 landscape:gap-2">
         
-        {/* TITLE SECTION - CENTERED ALWAYS */}
+        {/* TITLE SECTION */}
         <div className="flex-shrink-0 flex flex-col items-center text-center relative z-20">
-           {/* Scale logic refined for Tablet/Desktop */}
+           {/* LOGO UTAMA */}
            <div className="relative transform scale-90 md:scale-100 origin-center transition-transform">
-              <Star className="absolute -top-4 -left-6 md:-top-8 md:-left-12 lg:-top-10 lg:-left-16 text-yellow-300 w-8 h-8 md:w-16 md:h-16 lg:w-20 lg:h-20 animate-bounce drop-shadow-md z-0" fill="currentColor" />
-              <h1 className="text-5xl md:text-7xl lg:text-9xl font-titan tracking-wider leading-none text-center relative z-20"
-                  style={{ color: '#fbbf24', WebkitTextStroke: '3px #1e3a8a', paintOrder: 'stroke fill', textShadow: '0px 2px 0px #172554' }}
+              <Star className="absolute -top-6 -left-8 md:-top-8 md:-left-12 lg:-top-10 lg:-left-14 text-yellow-300 w-10 h-10 md:w-16 md:h-16 lg:w-20 lg:h-20 animate-bounce drop-shadow-lg z-0" fill="currentColor" />
+              
+              {/* JUDUL: Ukuran font disesuaikan agar tidak terlalu raksasa di desktop */}
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-titan tracking-wider leading-none text-center relative z-20 text-[#fbbf24] drop-shadow-xl"
+                  style={{ 
+                    WebkitTextStroke: window.innerWidth < 768 ? '4px #1e3a8a' : '6px #1e3a8a', 
+                    paintOrder: 'stroke fill',
+                    filter: 'drop-shadow(0px 4px 0px #172554)'
+                  }}
               >
                 {t.mainMenu.title}
               </h1>
            </div>
 
-           <div className="relative mt-1 md:mt-3 lg:mt-5 z-30 transform scale-90 md:scale-100 origin-center transition-transform">
-              <div className="bg-[#dc2626] px-4 py-1 md:px-8 md:py-2 lg:px-10 lg:py-3 rounded-lg md:rounded-xl lg:rounded-2xl border-b-4 md:border-b-8 border-[#991b1b] shadow-lg rotate-[-2deg]">
-                 <h1 className="text-2xl md:text-4xl lg:text-5xl font-titan text-white tracking-widest drop-shadow-sm whitespace-nowrap" style={{ textShadow: '0 1px 0 #7f1d1d' }}>
-                   {t.mainMenu.subtitle}
-                 </h1>
-              </div>
+           {/* SUBTITLE */}
+           <div className="relative z-30 transform scale-90 md:scale-100 origin-center transition-transform">
+              <RibbonSubtitle text={t.mainMenu.subtitle} />
            </div>
 
-           <div className="mt-3 md:mt-5 lg:mt-8 bg-white/80 backdrop-blur-sm px-3 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3 rounded-full border border-white/50 shadow-sm inline-block transform scale-90 md:scale-100 origin-center transition-transform">
-              <p className="text-indigo-600 font-bold text-[10px] md:text-sm lg:text-lg tracking-wide uppercase">
+           {/* TAGLINE */}
+           <div className="mt-3 md:mt-5 bg-white/90 backdrop-blur-sm px-4 py-1.5 md:px-5 md:py-2 rounded-full border-2 border-white/60 shadow-lg inline-block transform scale-90 md:scale-100 origin-center transition-transform">
+              <p className="text-indigo-600 font-black text-[10px] md:text-xs lg:text-sm tracking-widest uppercase">
                  {t.mainMenu.tagline}
               </p>
            </div>
         </div>
 
-        {/* MENU SECTION - Box Size System */}
+        {/* MENU BOX SECTION */}
         {/* 
-           - Mobile Portrait: max-w-xs (Standard phone)
-           - Tablet Portrait: max-w-md (iPad Mini/Air Portrait) -> INCREASED
-           - Desktop/Tablet Landscape: max-w-4xl (To fit 3 huge buttons)
+           REVISI CONTAINER:
+           - max-w-sm (Mobile)
+           - md:max-w-md (Tablet Portrait - Sedikit lebih lebar)
+           - landscape:max-w-4xl (Landscape: Cukup lebar untuk 3 tombol, TAPI TIDAK max-w-6xl)
         */}
-        <div className="w-full max-w-xs md:max-w-md lg:max-w-xl landscape:max-w-3xl md:landscape:max-w-5xl lg:landscape:max-w-6xl flex flex-col items-center transition-all duration-300">
-          <div className="w-full bg-white/80 backdrop-blur-xl rounded-2xl md:rounded-[2rem] p-3 md:p-6 lg:p-8 shadow-xl border-2 md:border-4 border-white/60">
+        <div className="w-full max-w-sm md:max-w-md landscape:max-w-4xl flex flex-col items-center transition-all duration-300">
+          <div className="w-full bg-white/80 backdrop-blur-xl rounded-2xl md:rounded-3xl p-3 md:p-5 shadow-2xl border-2 md:border-4 border-white/60">
             
             {/* Mode Switcher */}
-            <div className="flex bg-gray-100 p-1 md:p-2 rounded-lg md:rounded-xl mb-2 md:mb-4 relative shadow-inner">
-              <button onClick={() => { playSound('click'); setActiveMode('difference'); }} className={`flex-1 flex items-center justify-center gap-1 md:gap-2 py-1.5 md:py-3 lg:py-4 rounded-md md:rounded-lg font-bold text-[10px] md:text-sm lg:text-lg transition-all z-10 ${activeMode === 'difference' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400'}`}>
-                <Search className="w-3 h-3 md:w-5 md:h-5 lg:w-6 lg:h-6" /> {t.mainMenu.modeDiff}
+            <div className="flex bg-gray-100 p-1 md:p-1.5 rounded-xl mb-3 md:mb-5 relative shadow-inner">
+              <button onClick={() => { playSound('click'); setActiveMode('difference'); }} className={`flex-1 flex items-center justify-center gap-1.5 py-2 md:py-2.5 rounded-lg font-bold text-[10px] md:text-xs lg:text-sm transition-all z-10 ${activeMode === 'difference' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400'}`}>
+                <Search className="w-3 h-3 md:w-4 md:h-4" /> {t.mainMenu.modeDiff}
               </button>
-              <button onClick={() => { playSound('click'); setActiveMode('quiz'); }} className={`flex-1 flex items-center justify-center gap-1 md:gap-2 py-1.5 md:py-3 lg:py-4 rounded-md md:rounded-lg font-bold text-[10px] md:text-sm lg:text-lg transition-all z-10 ${activeMode === 'quiz' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400'}`}>
-                <Brain className="w-3 h-3 md:w-5 md:h-5 lg:w-6 lg:h-6" /> {t.mainMenu.modeQuiz}
+              <button onClick={() => { playSound('click'); setActiveMode('quiz'); }} className={`flex-1 flex items-center justify-center gap-1.5 py-2 md:py-2.5 rounded-lg font-bold text-[10px] md:text-xs lg:text-sm transition-all z-10 ${activeMode === 'quiz' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400'}`}>
+                <Brain className="w-3 h-3 md:w-4 md:h-4" /> {t.mainMenu.modeQuiz}
               </button>
             </div>
 
-            {/* 
-               GRID SYSTEM:
-               - Portrait: 1 Column
-               - Landscape: 3 Columns
-               - Gap scales with screen size
-            */}
-            <div className="grid grid-cols-1 landscape:grid-cols-3 gap-2 md:gap-4 lg:gap-6">
+            {/* Menu Grid - Gap proporsional */}
+            <div className="grid grid-cols-1 landscape:grid-cols-3 gap-2.5 md:gap-4">
               <MenuButton 
                 onClick={() => handleStart('easy')}
                 gradient="bg-gradient-to-r from-green-400 to-emerald-500"
                 shadowColor="border-emerald-700"
-                icon={<Star className="w-3.5 h-3.5 md:w-6 md:h-6 lg:w-8 lg:h-8" fill="white" />}
+                icon={<Star className="w-4 h-4 md:w-6 md:h-6" fill="white" />}
                 title={t.mainMenu.btnEasy}
                 subtitle={activeMode === 'quiz' ? t.mainMenu.subEasyQuiz : t.mainMenu.subEasy}
               />
@@ -222,7 +271,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({ onStart, onShowLeaderboard }
                 onClick={() => handleStart('medium')}
                 gradient="bg-gradient-to-r from-blue-400 to-indigo-500"
                 shadowColor="border-indigo-700"
-                icon={<Zap className="w-3.5 h-3.5 md:w-6 md:h-6 lg:w-8 lg:h-8" fill="white" />}
+                icon={<Zap className="w-4 h-4 md:w-6 md:h-6" fill="white" />}
                 title={t.mainMenu.btnMedium}
                 subtitle={activeMode === 'quiz' ? t.mainMenu.subMediumQuiz : t.mainMenu.subMedium}
               />
@@ -230,24 +279,24 @@ export const MainMenu: React.FC<MainMenuProps> = ({ onStart, onShowLeaderboard }
                 onClick={() => handleStart('hard')}
                 gradient="bg-gradient-to-r from-purple-400 to-fuchsia-500"
                 shadowColor="border-fuchsia-700"
-                icon={<Crown className="w-3.5 h-3.5 md:w-6 md:h-6 lg:w-8 lg:h-8" fill="white" />}
+                icon={<Crown className="w-4 h-4 md:w-6 md:h-6" fill="white" />}
                 title={t.mainMenu.btnHard}
                 subtitle={activeMode === 'quiz' ? t.mainMenu.subHardQuiz : t.mainMenu.subHard}
               />
             </div>
 
-            <div className="h-2 md:h-4 lg:h-6"></div>
+            <div className="h-3 md:h-5"></div>
 
             <button 
               onClick={() => { playSound('click'); onShowLeaderboard(); }}
-              className="w-full bg-orange-400 text-white font-bold py-2 md:py-4 lg:py-5 px-4 rounded-xl md:rounded-2xl border-b-[4px] md:border-b-[6px] lg:border-b-[8px] border-orange-600 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center gap-2 md:gap-3 shadow-md hover:bg-orange-500 font-titan tracking-wide text-xs md:text-lg lg:text-xl relative z-20"
+              className="w-full bg-orange-400 text-white font-bold py-2.5 md:py-3.5 px-4 rounded-xl md:rounded-2xl border-b-[4px] md:border-b-[5px] border-orange-600 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center gap-2 md:gap-3 shadow-md hover:bg-orange-500 font-titan tracking-wide text-xs md:text-sm lg:text-base relative z-20"
             >
-              <Trophy className="w-3.5 h-3.5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-yellow-100" /> {t.mainMenu.btnLeaderboard}
+              <Trophy className="w-4 h-4 md:w-5 md:h-5 text-yellow-100" /> {t.mainMenu.btnLeaderboard}
             </button>
           </div>
           
           <div className="w-full text-center mt-2 md:mt-4">
-             <p className="text-indigo-900 font-bold opacity-60 text-[9px] md:text-xs lg:text-sm">
+             <p className="text-indigo-900 font-bold opacity-60 text-[9px] md:text-[10px] lg:text-xs">
                 {t.mainMenu.footer}
              </p>
           </div>
