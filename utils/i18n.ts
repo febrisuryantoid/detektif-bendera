@@ -96,6 +96,7 @@ interface Translation {
     btnClose: string;
     version: string;
     btnChangelog: string;
+    btnWebsite: string;
   };
   changelog: {
     title: string;
@@ -218,7 +219,8 @@ const translations: Record<Language, Translation> = {
       footer: "Game Edukasi Gratis",
       btnClose: "Tutup",
       version: "Versi",
-      btnChangelog: "Lihat Changelog"
+      btnChangelog: "Lihat Changelog",
+      btnWebsite: "Kunjungi Website"
     },
     changelog: {
       title: "Riwayat Update",
@@ -339,7 +341,8 @@ const translations: Record<Language, Translation> = {
       footer: "Free Educational Game",
       btnClose: "Close",
       version: "Version",
-      btnChangelog: "View Changelog"
+      btnChangelog: "View Changelog",
+      btnWebsite: "Visit Website"
     },
     changelog: {
       title: "Update History",

@@ -31,25 +31,34 @@ export const AboutModal: React.FC<AboutModalProps> = ({ onClose }) => {
 
           <div className="p-4 overflow-y-auto custom-scrollbar flex-1">
             
-            <a 
-              href="https://febrisuryanto.com" 
-              target="_blank" 
-              rel="noopener sponsor"
-              onClick={() => playSound('click')}
-              className="block bg-indigo-50 rounded-2xl p-4 border-2 border-indigo-100 mb-4 text-center hover:bg-indigo-100 transition-colors cursor-pointer group relative"
-            >
-              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                 <ExternalLink size={14} className="text-indigo-400" />
-              </div>
+            {/* DEVELOPER CARD (Refactored to include distinct button) */}
+            <div className="bg-indigo-50 rounded-2xl p-4 border-2 border-indigo-100 mb-4 text-center transition-colors relative">
+              
+              {/* Profile Info */}
               <div className="flex justify-center mb-2">
-                <div className="bg-white p-2 rounded-full shadow-sm border border-indigo-100 group-hover:scale-110 transition-transform">
+                <div className="bg-white p-2 rounded-full shadow-sm border border-indigo-100">
                   <Code size={24} className="text-indigo-500" />
                 </div>
               </div>
               <p className="text-indigo-400 font-bold text-[10px] uppercase tracking-widest mb-0.5">{t.about.dev}</p>
               <h3 className="text-xl font-black text-indigo-900 font-titan leading-none">Febri Suryanto</h3>
-              <p className="text-[10px] font-bold text-indigo-600 mt-1">Web Design & Develop Profesional</p>
-            </a>
+              <p className="text-[10px] font-bold text-indigo-600 mt-1 mb-4">Web Design & Develop Profesional</p>
+
+              {/* Website Button */}
+              <a 
+                href="https://febrisuryanto.com" 
+                target="_blank" 
+                rel="noopener sponsor"
+                onClick={() => playSound('click')}
+                className="
+                  w-full bg-indigo-500 text-white font-bold py-2.5 rounded-xl 
+                  border-b-4 border-indigo-700 active:border-b-0 active:translate-y-1 
+                  transition-all shadow-md btn-3d flex items-center justify-center gap-2 text-xs
+                "
+              >
+                <Globe size={14} /> {t.about.btnWebsite}
+              </a>
+            </div>
 
             <div className="space-y-3">
               <div className="flex items-center gap-2 mb-1">
