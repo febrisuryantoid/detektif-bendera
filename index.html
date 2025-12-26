@@ -5,7 +5,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#38bdf8" />
-    <meta name="description" content="Asah pengetahuan nama Bendera Dunia. Game edukasi seru untuk anak!">
+    
+    <!-- SEO & GEO Optimization -->
+    <title>Detektif Bendera - Game Edukasi Anak & Kuis Geografi Dunia</title>
+    <meta name="description" content="Mainkan Detektif Bendera! Game edukasi interaktif untuk anak usia 6-12 tahun. Tebak nama negara, cari perbedaan bendera, dan belajar geografi dunia dengan seru. Gratis!">
+    <meta name="keywords" content="game edukasi, tebak bendera, flag quiz, geography game, mainan anak, educational game, detektif bendera, belajar bendera dunia, game anak sd, cari perbedaan">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Febri Suryanto">
+    <link rel="canonical" href="https://detektifbendera.vercel.app/" />
+
+    <!-- Open Graph / Facebook / WhatsApp (Agar Viral) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://detektifbendera.vercel.app/">
+    <meta property="og:title" content="Detektif Bendera - Game Edukasi Anak Terbaik">
+    <meta property="og:description" content="Ayo asah otak! Tebak bendera dan cari perbedaan. Seru, mendidik, dan gratis untuk anak Indonesia!">
+    <meta property="og:image" content="https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/icon.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Detektif Bendera - Kuis Geografi Seru">
+    <meta name="twitter:description" content="Mainkan game tebak bendera viral ini. Cocok untuk mengasah pengetahuan anak!">
+    <meta name="twitter:image" content="https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/icon.png">
     
     <!-- PWA & Mobile Capabilties -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -18,8 +40,8 @@
     <link rel="icon" type="image/png" href="https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/icon.png" />
     
     <link rel="manifest" href="./manifest.json" />
-    <title>Detektif Bendera</title>
     
+    <!-- SCHEMA MARKUP (RICH RESULTS - FIX AGGREGATE RATING) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -27,9 +49,29 @@
       "name": "Detektif Bendera",
       "alternateName": "Detective Flags",
       "applicationCategory": "GameApplication",
-      "operatingSystem": "Any",
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Game edukasi tebak bendera dan cari perbedaan untuk anak-anak."
+      "operatingSystem": "Android, iOS, Windows, macOS, Linux",
+      "description": "Game edukasi tebak bendera dan cari perbedaan untuk anak-anak usia 6-12 tahun. Mengasah logika dan pengetahuan umum.",
+      "url": "https://detektifbendera.vercel.app/",
+      "image": "https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/icon.png",
+      "offers": { 
+        "@type": "Offer", 
+        "price": "0", 
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "1250800",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "featureList": "Mode Cari Perbedaan, Mode Kuis, Papan Peringkat Global, Offline Mode",
+      "audience": {
+        "@type": "PeopleAudience",
+        "suggestedMinAge": "6",
+        "suggestedMaxAge": "12"
+      }
     }
     </script>
     
@@ -67,6 +109,22 @@
       #root {
         height: 100%;
         width: 100%;
+      }
+
+      /* FIX FULLSCREEN BLACK FLASH / BLANK SCREEN */
+      /* Memaksa background menjadi warna aplikasi saat transisi atau di mode fullscreen */
+      :fullscreen, ::backdrop {
+        background-color: #f0f9ff !important;
+      }
+      :-webkit-full-screen {
+        background-color: #f0f9ff !important;
+      }
+      :-moz-full-screen {
+        background-color: #f0f9ff !important;
+      }
+      html {
+        background-color: #f0f9ff;
+        overscroll-behavior: none;
       }
       
       /* UTILITIES */

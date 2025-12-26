@@ -100,9 +100,18 @@ export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore
 
   // Compact Header Button Component
   const HeaderBtn = ({ onClick, icon, colorClass, borderClass, text }: any) => (
-    <button onClick={onClick} className={`h-10 px-3 flex items-center justify-center gap-2 rounded-xl ${colorClass} ${borderClass} btn-3d`}>
+    <button 
+      onClick={onClick} 
+      className={`
+        h-10 md:h-12 lg:h-14 
+        px-3 md:px-5 lg:px-6 
+        flex items-center justify-center gap-2 
+        rounded-xl md:rounded-2xl 
+        ${colorClass} ${borderClass} btn-3d
+      `}
+    >
       {icon}
-      {text && <span className="text-xs font-black">{text}</span>}
+      {text && <span className="text-xs md:text-sm lg:text-base font-black">{text}</span>}
     </button>
   );
 
@@ -113,65 +122,75 @@ export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore
         HEADER / SIDEBAR 
         Portrait: Fixed Height Top Bar.
         Landscape: Fixed Width Sidebar.
+        Systematic: Use md/lg prefixes for tablet sizing.
       */}
       <div className="
          bg-white shadow-md border-b-4 landscape:border-b-0 landscape:border-r-4 border-gray-200 z-30 shrink-0
-         p-2 md:p-4
+         p-2 md:p-4 lg:p-6
          flex flex-row landscape:flex-col items-center justify-between
-         h-16 landscape:h-full landscape:w-48 xl:landscape:w-64
-         landscape:justify-start landscape:gap-4
+         h-16 md:h-20 lg:h-24 landscape:h-full 
+         landscape:w-56 md:landscape:w-64 lg:landscape:w-80
+         landscape:justify-start landscape:gap-6
       ">
         
         {/* Navigation & Score Group */}
-        <div className="flex landscape:flex-col gap-2 items-center landscape:w-full">
+        <div className="flex landscape:flex-col gap-2 md:gap-3 items-center landscape:w-full">
            <div className="flex items-center gap-2 landscape:w-full landscape:justify-between">
               <HeaderBtn 
                  onClick={() => { playSound('click'); onGoHome(); }} 
-                 icon={<Home className="text-white w-4 h-4 md:w-5 md:h-5" strokeWidth={3} />}
+                 icon={<Home className="text-white w-4 h-4 md:w-6 md:h-6" strokeWidth={3} />}
                  colorClass="bg-orange-400"
                  borderClass="border-orange-600"
               />
-              <div className="bg-indigo-500 text-white text-[10px] md:text-xs font-black px-2 py-1 md:px-3 md:py-2 rounded-lg shadow-sm border-b-2 border-indigo-700">
+              <div className="bg-indigo-500 text-white text-[10px] md:text-xs lg:text-sm font-black px-2 py-1 md:px-3 md:py-2 lg:px-4 lg:py-3 rounded-lg md:rounded-xl shadow-sm border-b-2 border-indigo-700">
                 LVL {level.levelNumber}
               </div>
            </div>
            
            {/* Score (Hidden on small mobile portrait to save space, visible in landscape) */}
-           <div className="hidden landscape:flex bg-gradient-to-b from-yellow-400 to-yellow-500 text-yellow-900 px-3 py-2 rounded-xl border-b-4 border-yellow-700 w-full items-center justify-between shadow-sm">
-                <span className="text-[10px] font-black uppercase opacity-70">SCORE</span>
+           <div className="hidden landscape:flex bg-gradient-to-b from-yellow-400 to-yellow-500 text-yellow-900 px-3 md:px-4 py-2 md:py-3 rounded-xl md:rounded-2xl border-b-4 border-yellow-700 w-full items-center justify-between shadow-sm">
+                <span className="text-[10px] md:text-xs lg:text-sm font-black uppercase opacity-70">SCORE</span>
                 <div className="flex items-center gap-1">
-                   <Trophy size={16} strokeWidth={3} className="text-white" />
-                   <span className="font-titan text-lg text-white">{currentTotalScore}</span>
+                   <Trophy className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-white" strokeWidth={3} />
+                   <span className="font-titan text-lg md:text-xl lg:text-2xl text-white">{currentTotalScore}</span>
                 </div>
            </div>
         </div>
 
         {/* TARGET MISSION (Center Piece) */}
-        <div className="flex-1 landscape:flex-none landscape:w-full mx-2 landscape:mx-0 bg-sky-50 rounded-xl p-1.5 border-2 border-sky-200 text-center flex flex-col justify-center min-w-0">
-             <span className="text-sky-500 font-black text-[8px] uppercase tracking-widest">{t.game.find}</span>
-             <h1 className="text-sm md:text-lg font-black text-gray-800 uppercase leading-none font-titan truncate w-full">
+        <div className="flex-1 landscape:flex-none landscape:w-full mx-2 landscape:mx-0 bg-sky-50 rounded-xl md:rounded-2xl p-1.5 md:p-3 lg:p-4 border-2 md:border-4 border-sky-200 text-center flex flex-col justify-center min-w-0">
+             <span className="text-sky-500 font-black text-[8px] md:text-[10px] lg:text-xs uppercase tracking-widest mb-0.5">{t.game.find}</span>
+             <h1 className="text-sm md:text-xl lg:text-2xl font-black text-gray-800 uppercase leading-none font-titan truncate w-full">
                 {targetName}
              </h1>
         </div>
 
         {/* CONTROLS (Timer & Hint) */}
-        <div className="flex landscape:flex-col gap-2 landscape:w-full landscape:mt-auto">
+        <div className="flex landscape:flex-col gap-2 md:gap-3 landscape:w-full landscape:mt-auto">
             {timeLeft !== null && (
-               <div className={`px-2 py-1.5 md:px-3 md:py-2 rounded-xl border-b-4 font-black text-xs md:text-sm flex items-center justify-center gap-1 shadow-sm ${timeLeft <= 5 ? 'bg-red-500 border-red-700 text-white animate-pulse' : 'bg-white border-gray-300 text-gray-700'}`}>
-                 <Clock size={16} strokeWidth={3} /> {timeLeft}s
+               <div className={`
+                 px-2 py-1.5 md:px-4 md:py-2.5 lg:px-5 lg:py-3 
+                 rounded-xl md:rounded-2xl border-b-4 font-black 
+                 text-xs md:text-base lg:text-lg 
+                 flex items-center justify-center gap-1 shadow-sm w-full
+                 ${timeLeft <= 5 ? 'bg-red-500 border-red-700 text-white animate-pulse' : 'bg-white border-gray-300 text-gray-700'}
+               `}>
+                 <Clock className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" strokeWidth={3} /> {timeLeft}s
                </div>
             )}
             <button 
               onClick={useHint} 
               disabled={hintsLeft <= 0 || isWon || isGameOver} 
               className={`
-                 px-3 py-1.5 md:px-4 md:py-2 rounded-xl font-bold text-xs border-b-4 flex items-center justify-center gap-1 transition-all btn-3d
+                 px-3 py-1.5 md:px-4 md:py-2.5 lg:px-5 lg:py-3 
+                 rounded-xl md:rounded-2xl font-bold text-xs md:text-sm lg:text-base 
+                 border-b-4 flex items-center justify-center gap-1 transition-all btn-3d w-full
                  ${hintsLeft > 0 && !isGameOver 
                     ? 'bg-yellow-300 text-yellow-900 border-yellow-600' 
                     : 'bg-gray-200 text-gray-400 border-gray-300'}
               `}
             >
-              <Lightbulb size={16} fill={hintsLeft > 0 ? "currentColor" : "none"} />
+              <Lightbulb className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" fill={hintsLeft > 0 ? "currentColor" : "none"} />
               <span className="hidden landscape:inline font-black">{t.game.hint} ({hintsLeft})</span>
               <span className="landscape:hidden font-black">({hintsLeft})</span>
             </button>
@@ -182,16 +201,15 @@ export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore
         GAME GRID AREA 
         Uses flex to center, but overflow hidden to contain grid.
       */}
-      <div className="flex-1 relative overflow-hidden flex flex-col items-center justify-center p-2 md:p-4">
-        <div className="w-full h-full max-w-5xl flex items-center justify-center">
+      <div className="flex-1 relative overflow-hidden flex flex-col items-center justify-center p-2 md:p-6 lg:p-8">
+        <div className="w-full h-full max-w-6xl flex items-center justify-center">
           
           <div 
-             className="grid gap-2 w-full max-h-full"
+             className="grid gap-2 md:gap-4 lg:gap-5 w-full max-h-full"
              style={{ 
                // Smart Grid Calculation:
                // Ensure flags don't get too stretched or too squashed.
                gridTemplateColumns: `repeat(${level.gridCols}, minmax(0, 1fr))`,
-               // Limit height to fit within container using aspect ratio logic or max-content
                alignContent: 'center',
              }}
           >
@@ -205,9 +223,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore
                   onClick={() => !isWon && !isGameOver && handleCardClick(flagCode, index)}
                   disabled={isWon || isGameOver}
                   className={`
-                    relative bg-white rounded-lg md:rounded-xl shadow-sm transition-all duration-200
+                    relative bg-white rounded-lg md:rounded-2xl shadow-sm transition-all duration-200
                     flex items-center justify-center overflow-hidden 
-                    border-2 md:border-[3px] border-white
+                    border-2 md:border-4 border-white
                     btn-3d
                     ${isWrong 
                       ? 'border-red-500 bg-red-100 shake z-10' 
@@ -215,7 +233,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore
                         ? 'border-green-500 bg-green-100 scale-105 z-20' 
                         : isGameOver 
                           ? 'grayscale opacity-50' 
-                          : 'border-b-4 border-b-gray-200 hover:border-b-sky-300 hover:border-sky-300'}
+                          : 'border-b-4 md:border-b-[6px] border-b-gray-200 hover:border-b-sky-300 hover:border-sky-300'}
                   `}
                   style={{ 
                      // Force aspect ratio to prevent squashing
@@ -228,10 +246,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore
                     <img src={`https://flagcdn.com/w320/${flagCode}.png`} alt="flag" className="w-full h-full object-contain p-1" onError={() => setFailedImages(p => ({...p, [index]: true}))} />
                   )}
                   
-                  {/* Overlay Icons */}
+                  {/* Overlay Icons - Responsive sizes */}
                   {(isWrong || isCorrect) && (
                     <div className={`absolute inset-0 flex items-center justify-center ${isCorrect ? 'bg-green-500/40' : 'bg-red-500/40'}`}>
-                      {isCorrect ? <Check size={32} className="text-white drop-shadow-md" strokeWidth={5} /> : <X size={32} className="text-white drop-shadow-md" strokeWidth={5} />}
+                      {isCorrect ? (
+                        <Check className="text-white drop-shadow-md w-8 h-8 md:w-16 md:h-16 lg:w-20 lg:h-20" strokeWidth={5} /> 
+                      ) : (
+                        <X className="text-white drop-shadow-md w-8 h-8 md:w-16 md:h-16 lg:w-20 lg:h-20" strokeWidth={5} />
+                      )}
                     </div>
                   )}
                 </button>

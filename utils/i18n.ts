@@ -142,7 +142,7 @@ const translations: Record<Language, Translation> = {
       subHardQuiz: "Ahli Geografi!",
       btnLeaderboard: "Papan Peringkat",
       btnInstall: "Install App",
-      modeDiff: "Cari Beda",
+      modeDiff: "Cari Perbedaan",
       modeQuiz: "Tebak Nama",
       footer: "© 2025 Detektif Bendera"
     },
@@ -192,7 +192,7 @@ const translations: Record<Language, Translation> = {
       emptyTitle: "Belum ada juara.",
       emptyDesc: "Jadilah yang pertama!",
       loading: "Sedang memuat skor...",
-      modeDiff: "Cari Beda",
+      modeDiff: "Cari Perbedaan",
       modeQuiz: "Tebak Nama",
       diffEasy: "Mudah",
       diffMedium: "Sedang",

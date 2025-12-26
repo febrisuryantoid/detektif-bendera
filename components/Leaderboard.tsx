@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Trophy, Crown, Calendar, Medal, Search, Brain, Star, Globe, WifiOff, Loader2, Share2 } from 'lucide-react';
+import { ChevronLeft, Trophy, Crown, Calendar, Search, Brain, Star, Globe, WifiOff, Loader2, Share2, Medal } from 'lucide-react';
 import { playSound } from '../utils/sound';
 import { Difficulty, GameMode, ScoreEntry } from '../types';
 import { getLocalHighScores, getGlobalHighScores } from '../utils/storage';
@@ -85,37 +85,46 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack, playerName }) 
     }
   };
 
+  // KONFIGURASI DESAIN KARTU BERDASARKAN PERINGKAT
   const getRankConfig = (index: number) => {
+    // RANK 1: PALING MEWAH (GOLD + GLOW + BIGGER)
     if (index === 0) return {
-      card: 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-500 border-b-4 border-yellow-600 text-yellow-900 shadow-xl transform scale-105 z-20',
-      crownColor: 'text-yellow-100',
-      textColor: 'text-yellow-950',
-      scoreColor: 'text-yellow-900 drop-shadow-sm',
-      rankText: 'text-yellow-700',
+      card: 'bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-500 border-b-[6px] border-amber-700 shadow-[0_10px_20px_rgba(245,158,11,0.5)] transform scale-105 z-30 ring-4 ring-yellow-200/50',
+      crownColor: 'text-white drop-shadow-md',
+      textColor: 'text-amber-950',
+      scoreColor: 'text-amber-900 drop-shadow-sm',
+      rankText: 'text-amber-800',
+      icon: <Trophy size={32} className="text-yellow-100 drop-shadow-md animate-bounce" strokeWidth={2.5} />,
       isTop3: true
     };
+    // RANK 2: MEWAH (SILVER)
     if (index === 1) return {
-      card: 'bg-gradient-to-r from-slate-200 via-slate-300 to-slate-400 border-b-4 border-slate-500 text-slate-800 shadow-lg z-10',
-      crownColor: 'text-slate-100',
+      card: 'bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 border-b-[6px] border-slate-600 shadow-lg z-20',
+      crownColor: 'text-white drop-shadow-md',
       textColor: 'text-slate-900',
-      scoreColor: 'text-slate-900',
-      rankText: 'text-slate-600',
+      scoreColor: 'text-slate-800',
+      rankText: 'text-slate-700',
+      icon: <Medal size={28} className="text-slate-100 drop-shadow-md" strokeWidth={2.5} />,
       isTop3: true
     };
+    // RANK 3: CUKUP MEWAH (BRONZE)
     if (index === 2) return {
-      card: 'bg-gradient-to-r from-orange-200 via-orange-300 to-orange-400 border-b-4 border-orange-500 text-orange-900 shadow-lg z-10',
-      crownColor: 'text-orange-100',
+      card: 'bg-gradient-to-br from-orange-200 via-orange-300 to-orange-400 border-b-[6px] border-orange-700 shadow-lg z-10',
+      crownColor: 'text-white drop-shadow-md',
       textColor: 'text-orange-950',
-      scoreColor: 'text-orange-950',
+      scoreColor: 'text-orange-900',
       rankText: 'text-orange-800',
+      icon: <Medal size={28} className="text-orange-100 drop-shadow-md" strokeWidth={2.5} />,
       isTop3: true
     };
+    // RANK 4+: BIASA SAJA (CLEAN)
     return {
-      card: 'bg-white border-b-2 border-gray-100 text-gray-700 shadow-sm hover:shadow-md hover:scale-[1.01]',
+      card: 'bg-white border-b-[3px] border-gray-100 text-gray-700 shadow-sm hover:shadow-md hover:scale-[1.01] hover:border-sky-200',
       crownColor: '', 
       textColor: 'text-gray-700',
       scoreColor: 'text-sky-600',
       rankText: 'text-gray-500',
+      icon: null,
       isTop3: false
     };
   };
@@ -198,7 +207,6 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack, playerName }) 
       </div>
 
       {/* --- LIST SCORES --- */}
-      {/* Changed custom-scrollbar to no-scrollbar */}
       <div className="flex-1 w-full max-w-lg overflow-y-auto px-4 pb-20 z-10 no-scrollbar">
         {scores.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-[2rem] border-4 border-dashed border-gray-200 shadow-sm opacity-80 mt-2">
@@ -216,7 +224,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack, playerName }) 
                 )}
             </div>
         ) : (
-            <div className="flex flex-col gap-3 pb-8 pt-2">
+            <div className="flex flex-col gap-3 pb-8 pt-4">
                 {scores.map((entry, i) => {
                     const style = getRankConfig(i);
                     const isCurrentUser = entry.name.trim().toLowerCase() === playerName.trim().toLowerCase();
@@ -225,26 +233,27 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack, playerName }) 
                       <div 
                         key={i} 
                         className={`
-                          relative rounded-2xl p-3 sm:p-4 flex items-center transition-all duration-300 animate-pop-in group
+                          relative rounded-2xl p-3 sm:p-4 flex items-center transition-all duration-300 animate-pop-in group overflow-hidden
                           ${style.card}
                         `}
                         style={{ animationDelay: `${i * 50}ms` }}
                       >
+                         {/* Pattern Overlay for Rank 1 only */}
+                         {i === 0 && (
+                           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,white_2px,transparent_2px)] bg-[length:12px_12px] pointer-events-none"></div>
+                         )}
+
                          {/* Rank Indicator */}
-                         <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mr-3 sm:mr-4 shrink-0">
+                         <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mr-3 sm:mr-4 shrink-0 z-10">
                             {style.isTop3 ? (
-                              <>
-                                <Crown 
-                                  size={56} 
-                                  className={`absolute -top-2 ${style.crownColor} drop-shadow-sm`} 
-                                  fill="currentColor" 
-                                />
-                                <span className={`relative top-1 z-10 font-black text-lg sm:text-xl ${style.rankText}`}>
+                              <div className="flex flex-col items-center justify-center">
+                                {style.icon}
+                                <span className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-xl sm:text-2xl mt-1 ${style.rankText}`}>
                                   {i + 1}
                                 </span>
-                              </>
+                              </div>
                             ) : (
-                              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-100 flex items-center justify-center border-2 border-gray-200 font-black text-gray-500 text-sm sm:text-base">
+                              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-50 flex items-center justify-center border-2 border-gray-200 font-black text-gray-500 text-sm sm:text-base shadow-inner">
                                 {i + 1}
                               </div>
                             )}
@@ -262,16 +271,16 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack, playerName }) 
                          </div>
 
                          {/* Score & Share */}
-                         <div className="flex flex-col items-end gap-1">
+                         <div className="flex flex-col items-end gap-1 z-10">
                             <div 
-                                className={`text-xl sm:text-3xl font-black z-10 font-titan tracking-wide ${style.scoreColor}`}
+                                className={`text-xl sm:text-3xl font-black font-titan tracking-wide ${style.scoreColor}`}
                             >
                                 {entry.score}
                             </div>
                             {isCurrentUser && (
                               <button 
                                 onClick={() => handleShareRank(entry, i)}
-                                className="text-gray-400 hover:text-indigo-500 p-1 bg-white/50 rounded-full active:scale-95 transition-all"
+                                className="text-gray-400 hover:text-indigo-500 p-1.5 bg-white/60 backdrop-blur-sm rounded-full active:scale-95 transition-all shadow-sm"
                                 title={t.leaderboard.btnShare}
                               >
                                 <Share2 size={16} />
