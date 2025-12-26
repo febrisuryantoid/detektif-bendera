@@ -1,5 +1,5 @@
 <div align="center">
-<img width="1200" height="475" alt="Screenshot Detektif Bendera" src="https://raw.githubusercontent.com/febrisuryantoid/detektif-bendera/refs/heads/main/screenshot.webp" />
+<img width="1200" height="475" alt="Screenshot Detektif Bendera" src="https://beeimg.com/images/s01600532121.webp" />
 </div>
 
 # Detektif Bendera
