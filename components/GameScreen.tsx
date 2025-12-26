@@ -137,7 +137,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore
              <h1 className="text-base font-black text-gray-800 uppercase leading-tight font-titan text-stroke-sm truncate w-full">
                 {targetName}
              </h1>
-             <img src={`https://flagcdn.com/w160/${level.targetFlag}.png`} className="h-8 w-auto mx-auto mt-1 rounded shadow-sm opacity-60 grayscale" alt="Target" />
+             {/* IMAGE REMOVED: User requested removal of grayscale hint to increase difficulty */}
         </div>
 
         {/* Bottom Controls */}

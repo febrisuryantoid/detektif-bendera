@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
-import { Play } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Play, UserCheck, UserPlus } from 'lucide-react';
 import { playSound } from '../utils/sound';
 import { useLanguage } from '../utils/i18n';
+import { checkLocalNameExists } from '../utils/storage';
 
 interface NameInputModalProps {
   onSubmit: (name: string) => void;
@@ -13,33 +14,41 @@ export const NameInputModal: React.FC<NameInputModalProps> = ({ onSubmit, initia
   const { t } = useLanguage();
   const [name, setName] = useState(initialValue);
   const [error, setError] = useState(false);
+  const [isExistingUser, setIsExistingUser] = useState(false);
+
+  // Real-time check saat user mengetik
+  useEffect(() => {
+    const clean = name.trim();
+    if (clean.length > 0) {
+      const exists = checkLocalNameExists(clean);
+      setIsExistingUser(exists);
+    } else {
+      setIsExistingUser(false);
+    }
+  }, [name]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name.trim().length === 0) {
+    const cleanName = name.trim();
+    
+    if (cleanName.length === 0) {
       setError(true);
       playSound('wrong');
       return;
     }
+    
     playSound('click');
-    onSubmit(name.trim());
+    onSubmit(cleanName); 
   };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 backdrop-blur-sm animate-pop-in overflow-y-auto">
       <div className="bg-white rounded-[2.5rem] shadow-2xl border-b-8 border-indigo-600 relative overflow-hidden my-auto w-full max-w-sm">
         
-        {/* 
-           FIX LAYOUT:
-           Increased header height (h-40) to provide ample visual weight.
-        */}
+        {/* Header Decor */}
         <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-br from-indigo-500 to-purple-600"></div>
         
-        {/* 
-           FIX OVERLAP:
-           Icon container positioned at top-10.
-           Replaced Lucide Icon with Custom Game Logo
-        */}
+        {/* Logo */}
         <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-white p-2 rounded-full shadow-2xl border-4 border-indigo-50 z-10">
            <img 
               src="https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/icon.png" 
@@ -48,10 +57,7 @@ export const NameInputModal: React.FC<NameInputModalProps> = ({ onSubmit, initia
            />
         </div>
 
-        {/* 
-           FIX OVERLAP:
-           Used mt-40 (160px) to ensure the content starts well below the icon.
-        */}
+        {/* Content */}
         <div className="mt-40 pt-2 px-8 pb-8 text-center relative z-0">
           <h2 className="text-3xl font-black text-indigo-900 mb-2 font-titan tracking-wide uppercase mt-2">{t.nameModal.title}</h2>
           <p className="text-gray-500 font-bold text-sm mb-6 leading-relaxed">{t.nameModal.desc}</p>
@@ -73,16 +79,37 @@ export const NameInputModal: React.FC<NameInputModalProps> = ({ onSubmit, initia
                 `}
                 autoFocus
               />
+              
+              {/* Feedback Status Nama */}
+              {name.trim().length > 0 && !error && (
+                <div className={`absolute -bottom-6 left-0 w-full text-center text-[10px] font-bold flex items-center justify-center gap-1 ${isExistingUser ? 'text-blue-500' : 'text-green-500'}`}>
+                  {isExistingUser ? (
+                    <>
+                      <UserCheck size={12} /> Selamat datang kembali!
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus size={12} /> Nama tersedia
+                    </>
+                  )}
+                </div>
+              )}
+              
               {error && (
                 <p className="text-red-500 text-xs font-bold mt-2 animate-bounce">{t.nameModal.error}</p>
               )}
             </div>
 
+            <div className="h-4"></div>
+
             <button
               type="submit"
-              className="w-full bg-indigo-500 text-white font-bold py-3.5 rounded-2xl border-b-4 border-indigo-700 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center gap-2 hover:bg-indigo-600 shadow-lg group mt-2"
+              className={`
+                w-full text-white font-bold py-3.5 rounded-2xl border-b-4 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center gap-2 shadow-lg group mt-2
+                ${isExistingUser ? 'bg-blue-500 border-blue-700 hover:bg-blue-600' : 'bg-indigo-500 border-indigo-700 hover:bg-indigo-600'}
+              `}
             >
-              {t.nameModal.btnStart} <Play size={20} className="fill-white group-hover:scale-110 transition-transform" />
+              {isExistingUser ? 'Lanjut Main' : t.nameModal.btnStart} <Play size={20} className="fill-white group-hover:scale-110 transition-transform" />
             </button>
           </form>
         </div>

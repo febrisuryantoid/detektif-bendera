@@ -8,23 +8,30 @@ interface Translation {
     title: string;
     subtitle: string;
     tagline: string;
-    // Difference Mode Descriptions
     btnEasy: string;
     subEasy: string;
     btnMedium: string;
     subMedium: string;
     btnHard: string;
     subHard: string;
-    // Quiz Mode Descriptions (NEW)
     subEasyQuiz: string;
     subMediumQuiz: string;
     subHardQuiz: string;
-    
     btnLeaderboard: string;
     btnInstall: string;
     modeDiff: string;
     modeQuiz: string;
     footer: string;
+  };
+  settings: {
+    title: string;
+    music: string;
+    sfx: string;
+    track: string;
+    trackFun: string;
+    trackAdv: string;
+    trackChill: string;
+    btnClose: string;
   };
   game: {
     level: string;
@@ -51,6 +58,8 @@ interface Translation {
     btnReplay: string;
     btnHome: string;
     btnRetry: string;
+    btnShare: string;
+    shareMsgScore: string;
   };
   levelSelect: {
     title: string;
@@ -65,6 +74,8 @@ interface Translation {
     diffEasy: string;
     diffMedium: string;
     diffHard: string;
+    shareRankMsg: string;
+    btnShare: string;
   };
   nameModal: {
     title: string;
@@ -108,26 +119,30 @@ const translations: Record<Language, Translation> = {
       title: "DETEKTIF",
       subtitle: "BENDERA",
       tagline: "Belajar Mengenal Negara dengan Cara Seru",
-      
       btnEasy: "Mudah",
-      subEasy: "Santai & Gampang", // Diff
-      
+      subEasy: "Santai & Gampang",
       btnMedium: "Sedang",
-      subMedium: "Tantangan Seru", // Diff
-      
+      subMedium: "Tantangan Seru",
       btnHard: "Sulit",
-      subHard: "Ahli Detektif!", // Diff
-
-      // Quiz Mode Descriptions
+      subHard: "Ahli Detektif!",
       subEasyQuiz: "Negara Populer",
       subMediumQuiz: "Bendera Mirip",
       subHardQuiz: "Ahli Geografi!",
-
       btnLeaderboard: "Papan Peringkat",
       btnInstall: "Install App",
       modeDiff: "Cari Beda",
       modeQuiz: "Tebak Nama",
       footer: "© 2025 Detektif Bendera"
+    },
+    settings: {
+      title: "PENGATURAN",
+      music: "Musik Latar",
+      sfx: "Efek Suara",
+      track: "Pilihan Musik",
+      trackFun: "Ceria",
+      trackAdv: "Petualangan",
+      trackChill: "Santai",
+      btnClose: "Simpan & Tutup"
     },
     game: {
       level: "Level",
@@ -147,13 +162,15 @@ const translations: Record<Language, Translation> = {
       winTitle: "HORE BERHASIL!",
       winMsg: "Kamu hebat sekali!",
       loseTitle: "YAH, GAGAL!",
-      loseMsg: "Waktu habis atau salah tebak.",
+      loseMsg: "Jangan menyerah, coba lagi ya!",
       totalScore: "Total Skor",
       btnNext: "Level Berikutnya",
       btnChampion: "KAMU JUARA DUNIA! 🏆",
       btnReplay: "Main Dari Awal",
       btnHome: "Kembali ke Menu",
-      btnRetry: "Coba Lagi"
+      btnRetry: "Coba Lagi",
+      btnShare: "Bagikan",
+      shareMsgScore: "Saya mendapatkan Skor {score} di game Detektif Bendera mode {mode} {diff}. Ayo kejar saya!"
     },
     levelSelect: {
       title: "Level"
@@ -167,7 +184,9 @@ const translations: Record<Language, Translation> = {
       modeQuiz: "Tebak Nama",
       diffEasy: "Mudah",
       diffMedium: "Sedang",
-      diffHard: "Sulit"
+      diffHard: "Sulit",
+      btnShare: "Bagikan Posisi",
+      shareRankMsg: "Saya telah berada di Posisi {rank} dalam permainan Detektif Bendera pada mode {mode} {diff}, ayo kejar posisi saya sekarang!"
     },
     nameModal: {
       title: "Siapa Namamu?",
@@ -179,12 +198,12 @@ const translations: Record<Language, Translation> = {
     about: {
       title: "Tentang Game",
       dev: "Pengembang",
-      assets: "Kredit & Aset",
+      assets: "Sumber Aset",
       icons: "Ikon & UI",
       flags: "Gambar Bendera",
       audio: "Audio & SFX",
       fonts: "Font",
-      footer: "Dibuat dengan ❤️ untuk Anak Indonesia",
+      footer: "Game Edukasi Gratis",
       btnClose: "Tutup"
     },
     installWizard: {
@@ -209,26 +228,30 @@ const translations: Record<Language, Translation> = {
       title: "DETECTIVE",
       subtitle: "FLAGS",
       tagline: "Learn Countries in a Fun Way",
-      
       btnEasy: "Easy",
-      subEasy: "Relaxed & Simple", // Diff
-      
+      subEasy: "Relaxed & Simple",
       btnMedium: "Medium",
-      subMedium: "Exciting Challenge", // Diff
-      
+      subMedium: "Exciting Challenge",
       btnHard: "Hard",
-      subHard: "Detective Expert!", // Diff
-
-      // Quiz Mode Descriptions
+      subHard: "Detective Expert!",
       subEasyQuiz: "Popular Countries",
       subMediumQuiz: "Tricky Flags",
       subHardQuiz: "Geography Expert!",
-
       btnLeaderboard: "Leaderboard",
       btnInstall: "Install App",
       modeDiff: "Find Diff",
       modeQuiz: "Name Quiz",
       footer: "© 2025 Flag Detective"
+    },
+    settings: {
+      title: "SETTINGS",
+      music: "Background Music",
+      sfx: "Sound Effects",
+      track: "Music Track",
+      trackFun: "Fun",
+      trackAdv: "Adventure",
+      trackChill: "Chill",
+      btnClose: "Save & Close"
     },
     game: {
       level: "Level",
@@ -248,13 +271,15 @@ const translations: Record<Language, Translation> = {
       winTitle: "YOU DID IT!",
       winMsg: "You are amazing!",
       loseTitle: "OH NO!",
-      loseMsg: "Time up or wrong guess.",
+      loseMsg: "Don't give up, try again!",
       totalScore: "Total Score",
       btnNext: "Next Level",
       btnChampion: "WORLD CHAMPION! 🏆",
       btnReplay: "Play Again",
       btnHome: "Back to Menu",
-      btnRetry: "Try Again"
+      btnRetry: "Try Again",
+      btnShare: "Share",
+      shareMsgScore: "I scored {score} in Flag Detective game mode {mode} {diff}. Catch me if you can!"
     },
     levelSelect: {
       title: "Levels"
@@ -268,7 +293,9 @@ const translations: Record<Language, Translation> = {
       modeQuiz: "Name Quiz",
       diffEasy: "Easy",
       diffMedium: "Medium",
-      diffHard: "Hard"
+      diffHard: "Hard",
+      btnShare: "Share Rank",
+      shareRankMsg: "I reached Rank {rank} in Flag Detective game mode {mode} {diff}, catch my position now!"
     },
     nameModal: {
       title: "What's Your Name?",
@@ -285,7 +312,7 @@ const translations: Record<Language, Translation> = {
       flags: "Flag Images",
       audio: "Audio & SFX",
       fonts: "Fonts",
-      footer: "Made with ❤️ for Kids Worldwide",
+      footer: "Free Educational Game",
       btnClose: "Close"
     },
     installWizard: {

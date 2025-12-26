@@ -31,10 +31,8 @@ export const AboutModal: React.FC<AboutModalProps> = ({ onClose }) => {
         {/* Scrollable Content */}
         <div className="p-6 overflow-y-auto custom-scrollbar">
           
-          {/* Developer Card */}
+          {/* Developer Card (Generic) */}
           <div className="bg-indigo-50 rounded-3xl p-5 border-4 border-indigo-100 mb-6 text-center relative overflow-hidden group">
-             <div className="absolute -right-4 -top-4 w-16 h-16 bg-indigo-200 rounded-full opacity-50 blur-xl"></div>
-             
              <div className="flex justify-center mb-3">
                <div className="bg-white p-3 rounded-full shadow-md border-2 border-indigo-100">
                  <Code size={32} className="text-indigo-500" />
@@ -42,17 +40,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ onClose }) => {
              </div>
              
              <p className="text-indigo-400 font-bold text-xs uppercase tracking-widest mb-1">{t.about.dev}</p>
-             <h3 className="text-2xl font-black text-indigo-900 font-titan mb-3">Febri Suryanto</h3>
-             
-             <a 
-               href="https://febrisuryanto.com" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-5 rounded-xl border-b-4 border-indigo-700 active:border-b-0 active:translate-y-1 transition-all shadow-md text-sm"
-               onClick={() => playSound('click')}
-             >
-               <Globe size={16} /> febrisuryanto.com <ExternalLink size={14} />
-             </a>
+             <h3 className="text-2xl font-black text-indigo-900 font-titan mb-3">FreeIT</h3>
           </div>
 
           {/* Credits / Assets Section */}
@@ -66,7 +54,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ onClose }) => {
                <CreditItem 
                  icon={<Palette size={16} className="text-pink-500" />}
                  title={t.about.icons}
-                 desc="Lucide React & Flaticon"
+                 desc="Flaticon & Lucide"
                  bg="bg-pink-50"
                  border="border-pink-100"
                />
@@ -80,16 +68,9 @@ export const AboutModal: React.FC<AboutModalProps> = ({ onClose }) => {
                <CreditItem 
                  icon={<Music size={16} className="text-orange-500" />}
                  title={t.about.audio}
-                 desc="Web Audio API (Generated)"
+                 desc="Web Audio API"
                  bg="bg-orange-50"
                  border="border-orange-100"
-               />
-               <CreditItem 
-                 icon={<span className="font-titan text-blue-500 text-sm">Aa</span>}
-                 title={t.about.fonts}
-                 desc="Google Fonts (Titan One & Fredoka)"
-                 bg="bg-blue-50"
-                 border="border-blue-100"
                />
             </div>
           </div>

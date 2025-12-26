@@ -12,9 +12,13 @@ export const FLAG_NAMES_ID: Record<string, string> = {
   la: "Laos", kh: "Kamboja", mm: "Myanmar", np: "Nepal",
   lk: "Sri Lanka", mv: "Maladewa", bt: "Bhutan", kz: "Kazakhstan",
   uz: "Uzbekistan", kg: "Kirgistan", tm: "Turkmenistan", tj: "Tajikistan",
+  ge: "Georgia", am: "Armenia", az: "Azerbaijan", om: "Oman",
+  qa: "Qatar", bh: "Bahrain", kw: "Kuwait", ae: "Uni Emirat Arab",
+  ye: "Yaman", sy: "Suriah", jo: "Yordania", lb: "Lebanon",
+  il: "Israel", ps: "Palestina",
   
   // Europe
-  gb: "Inggris Raya", fr: "Prancis", de: "Jerman", it: "Italia",
+  gb: "Inggris Raya", "gb-sct": "Skotlandia", fr: "Prancis", de: "Jerman", it: "Italia",
   es: "Spanyol", pt: "Portugal", nl: "Belanda", be: "Belgia",
   ch: "Swiss", at: "Austria", se: "Swedia", no: "Norwegia",
   dk: "Denmark", fi: "Finlandia", is: "Islandia", ie: "Irlandia",
@@ -35,7 +39,7 @@ export const FLAG_NAMES_ID: Record<string, string> = {
   cr: "Kosta Rika", ni: "Nikaragua", hn: "Honduras", sv: "El Salvador",
   gt: "Guatemala", bz: "Belize", cu: "Kuba", jm: "Jamaika",
   ht: "Haiti", do: "Rep. Dominika", bs: "Bahama", bb: "Barbados",
-  tt: "Trinidad & Tobago", pr: "Puerto Riko",
+  tt: "Trinidad & Tobago", pr: "Puerto Riko", dm: "Dominika",
 
   // Africa
   eg: "Mesir", za: "Afrika Selatan", ng: "Nigeria", ke: "Kenya",
@@ -45,7 +49,7 @@ export const FLAG_NAMES_ID: Record<string, string> = {
   mg: "Madagaskar", ao: "Angola", mz: "Mozambik", zm: "Zambia",
   bw: "Botswana", na: "Namibia", so: "Somalia", lr: "Liberia",
   sl: "Sierra Leone", gn: "Guinea", ml: "Mali", bf: "Burkina Faso",
-  ne: "Niger", td: "Chad", ly: "Libya", rw: "Rwanda",
+  ne: "Niger", td: "Chad", ly: "Libya", rw: "Rwanda", ga: "Gabon",
 
   // Oceania
   au: "Australia", nz: "Selandia Baru", pg: "Papua Nugini", fj: "Fiji",
@@ -65,9 +69,13 @@ export const FLAG_NAMES_EN: Record<string, string> = {
   la: "Laos", kh: "Cambodia", mm: "Myanmar", np: "Nepal",
   lk: "Sri Lanka", mv: "Maldives", bt: "Bhutan", kz: "Kazakhstan",
   uz: "Uzbekistan", kg: "Kyrgyzstan", tm: "Turkmenistan", tj: "Tajikistan",
+  ge: "Georgia", am: "Armenia", az: "Azerbaijan", om: "Oman",
+  qa: "Qatar", bh: "Bahrain", kw: "Kuwait", ae: "UAE",
+  ye: "Yemen", sy: "Syria", jo: "Jordan", lb: "Lebanon",
+  il: "Israel", ps: "Palestine",
   
   // Europe
-  gb: "United Kingdom", fr: "France", de: "Germany", it: "Italy",
+  gb: "United Kingdom", "gb-sct": "Scotland", fr: "France", de: "Germany", it: "Italy",
   es: "Spain", pt: "Portugal", nl: "Netherlands", be: "Belgium",
   ch: "Switzerland", at: "Austria", se: "Sweden", no: "Norway",
   dk: "Denmark", fi: "Finland", is: "Iceland", ie: "Ireland",
@@ -88,7 +96,7 @@ export const FLAG_NAMES_EN: Record<string, string> = {
   cr: "Costa Rica", ni: "Nicaragua", hn: "Honduras", sv: "El Salvador",
   gt: "Guatemala", bz: "Belize", cu: "Cuba", jm: "Jamaica",
   ht: "Haiti", do: "Dominican Rep.", bs: "Bahamas", bb: "Barbados",
-  tt: "Trinidad & Tobago", pr: "Puerto Rico",
+  tt: "Trinidad & Tobago", pr: "Puerto Rico", dm: "Dominica",
 
   // Africa
   eg: "Egypt", za: "South Africa", ng: "Nigeria", ke: "Kenya",
@@ -98,7 +106,7 @@ export const FLAG_NAMES_EN: Record<string, string> = {
   mg: "Madagascar", ao: "Angola", mz: "Mozambique", zm: "Zambia",
   bw: "Botswana", na: "Namibia", so: "Somalia", lr: "Liberia",
   sl: "Sierra Leone", gn: "Guinea", ml: "Mali", bf: "Burkina Faso",
-  ne: "Niger", td: "Chad", ly: "Libya", rw: "Rwanda",
+  ne: "Niger", td: "Chad", ly: "Libya", rw: "Rwanda", ga: "Gabon",
 
   // Oceania
   au: "Australia", nz: "New Zealand", pg: "Papua New Guinea", fj: "Fiji",
@@ -107,7 +115,6 @@ export const FLAG_NAMES_EN: Record<string, string> = {
   fm: "Micronesia", mh: "Marshall Islands"
 };
 
-// Groups of flags that look VERY similar to challenge the brain
 export const CONFUSION_GROUPS = [
   ['id', 'mc', 'pl', 'sg', 'at', 'pe', 'gl', 'tn', 'bh', 'qa'], 
   ['nl', 'lu', 'fr', 'ru', 'py', 'hr', 'th', 'cr'],
@@ -123,7 +130,6 @@ export const CONFUSION_GROUPS = [
   ['us', 'my', 'lr', 'pr', 'cu', 'cl']
 ];
 
-// Helper to get all keys from ID (default)
 export const FLAG_NAMES = FLAG_NAMES_ID;
 
 export const getFlagName = (code: string, lang: Language = 'id') => {

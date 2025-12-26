@@ -180,7 +180,8 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({ level, currentTotalScore
                const isSelected = selectedOptionCode === optionCode;
                const isCorrect = optionCode === level.correctOption;
                
-               let btnClass = "bg-white border-gray-200 text-gray-700 hover:bg-gray-50";
+               // COLOR LOGIC UPDATED: Default is now Amber/Yellow, not White
+               let btnClass = "bg-amber-100 border-amber-300 text-amber-900 hover:bg-amber-200";
                
                if (isWon && isCorrect) {
                   btnClass = "bg-green-500 border-green-700 text-white ring-2 ring-green-300";

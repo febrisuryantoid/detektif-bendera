@@ -1,13 +1,13 @@
 
 import React, { useEffect } from 'react';
-import { Star, ArrowRight, Home, RotateCcw, Trophy, Frown, UploadCloud, Globe } from 'lucide-react';
+import { Star, ArrowRight, Home, RotateCcw, Trophy, Frown, UploadCloud, Globe, Share2 } from 'lucide-react';
 import { playSound } from '../utils/sound';
 import { saveScore } from '../utils/storage';
 import { Difficulty, GameMode } from '../types';
 import { useLanguage } from '../utils/i18n';
 
 interface ResultModalProps {
-  score: number; // Ini sekarang adalah CUMULATIVE SCORE
+  score: number;
   difficulty: Difficulty;
   mode: GameMode; 
   playerName: string;
@@ -16,7 +16,7 @@ interface ResultModalProps {
   onNext: () => void;
   onHome: () => void;
   onReplay: () => void;
-  onLeaderboard: () => void; // Added prop
+  onLeaderboard: () => void;
 }
 
 export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mode, playerName, isLastLevel, isWin, onNext, onHome, onReplay, onLeaderboard }) => {
@@ -29,6 +29,8 @@ export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mod
     
     if (isWin) {
       playSound('win');
+    } else {
+      playSound('lose'); // New Lose SFX
     }
   }, [isWin, score, difficulty, mode, playerName]);
 
@@ -36,6 +38,32 @@ export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mod
     playSound('click');
     action();
   }
+
+  const handleShare = async () => {
+    playSound('click');
+    const msg = t.result.shareMsgScore
+      .replace('{score}', score.toString())
+      .replace('{mode}', mode.toUpperCase())
+      .replace('{diff}', difficulty.toUpperCase());
+      
+    const url = "https://detektifbendera.vercel.app/";
+    const fullText = `${msg} ${url}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Detektif Bendera',
+          text: msg,
+          url: url
+        });
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      navigator.clipboard.writeText(fullText);
+      alert("Link copied to clipboard!");
+    }
+  };
 
   // Theme configuration
   const theme = isWin ? {
@@ -59,19 +87,15 @@ export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mod
   };
 
   return (
-    // FIX 1: Add overflow-y-auto to the PARENT wrapper so if screen is small, we scroll the whole page
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
       <div className={`
          relative w-full max-w-sm rounded-[3rem] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] 
          border-[8px] ${theme.borderColor} bg-white transform scale-100 animate-bounce-in 
          overflow-visible my-auto
       `}>
-        {/* FIX 2: Removed overflow-y-auto/no-scrollbar from the CARD itself so the negative top icon is visible */}
         
-        {/* Confetti / Decor Background inside card */}
         <div className={`absolute inset-0 rounded-[2.5rem] opacity-10 bg-[radial-gradient(circle,currentColor_2px,transparent_2px)] bg-[length:24px_24px] pointer-events-none ${theme.titleColor}`}></div>
 
-        {/* Floating Header Icon - Now safely visible because parent has padding and card has overflow-visible */}
         <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-20">
            <div className={`p-6 rounded-full border-8 border-white shadow-xl ${theme.iconBg}`}>
               {theme.icon}
@@ -93,17 +117,20 @@ export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mod
              <div className="text-5xl sm:text-6xl font-black text-yellow-500 font-titan tracking-tighter drop-shadow-sm">
                 {score}
              </div>
-             {navigator.onLine && (
-               <div className="absolute bottom-2 right-2 opacity-30">
-                 <UploadCloud size={16} className="text-yellow-600" />
-               </div>
+             {/* SHARE BUTTON INSIDE SCORE CARD */}
+             {isWin && (
+                <button 
+                  onClick={handleShare}
+                  className="absolute bottom-2 right-2 p-2 bg-yellow-400 rounded-full shadow-sm hover:scale-110 transition-transform text-white border-b-2 border-yellow-600 active:border-b-0 active:translate-y-0.5"
+                  title={t.result.btnShare}
+                >
+                   <Share2 size={16} />
+                </button>
              )}
           </div>
 
           <div className="flex flex-col gap-3">
-             {/* Main Action Button */}
              {isWin ? (
-                // JIKA MENANG
                 !isLastLevel ? (
                    <button 
                      onClick={() => handleClick(onNext)}
@@ -116,7 +143,6 @@ export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mod
                      <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-black p-4 rounded-2xl border-b-8 border-orange-700 shadow-lg text-lg animate-pulse">
                         {t.result.btnChampion}
                      </div>
-                     {/* BUTTON LEADERBOARD FOR CHAMPION */}
                      <button
                        onClick={() => handleClick(onLeaderboard)}
                        className="w-full bg-indigo-500 hover:bg-indigo-400 text-white text-lg font-black py-3 rounded-2xl border-b-4 border-indigo-700 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center gap-2 shadow-lg"
@@ -126,7 +152,6 @@ export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mod
                    </div>
                 )
              ) : (
-                // JIKA KALAH (GAME OVER)
                 <button 
                   onClick={() => handleClick(onReplay)}
                   className="w-full bg-sky-400 hover:bg-sky-300 text-white text-lg sm:text-xl font-black py-4 rounded-2xl border-b-8 border-sky-600 active:border-b-0 active:translate-y-2 transition-all flex items-center justify-center gap-3 shadow-lg"
@@ -135,7 +160,6 @@ export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mod
                 </button>
              )}
 
-             {/* Secondary Button */}
              <button 
                 onClick={() => handleClick(onHome)}
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold py-3 rounded-2xl border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center gap-2 mt-2 text-sm sm:text-base"

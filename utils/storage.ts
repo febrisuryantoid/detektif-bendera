@@ -4,7 +4,35 @@ import { supabase } from './supabase';
 
 const SCORES_KEY_PREFIX = 'detektif_bendera_scores';
 
-// --- LOCAL STORAGE HELPERS (Backup / Offline) ---
+// --- HELPER: DEDUPLICATE LOGIC ---
+// Ini fungsi pembersih utama. Menghapus duplikat nama, menyisakan SKOR TERTINGGI saja.
+const deduplicateScores = (scores: ScoreEntry[]): ScoreEntry[] => {
+  const map = new Map<string, ScoreEntry>();
+  
+  scores.forEach(entry => {
+    // Normalisasi kunci: trim spasi & lowercase
+    const key = entry.name.trim().toLowerCase();
+    
+    const existing = map.get(key);
+    
+    if (!existing) {
+      // Belum ada, masukkan
+      map.set(key, { ...entry, name: entry.name.trim() });
+    } else {
+      // Sudah ada, bandingkan skor
+      if (entry.score > existing.score) {
+        // Jika skor entry ini lebih besar, gantikan yang lama
+        map.set(key, { ...entry, name: entry.name.trim() });
+      }
+      // Jika skor lebih kecil, ABAIKAN (ini yang menghapus "Kayzan" skor kecil)
+    }
+  });
+
+  // Kembalikan array urut skor tertinggi
+  return Array.from(map.values()).sort((a, b) => b.score - a.score);
+};
+
+// --- LOCAL STORAGE HELPERS ---
 
 const getStorageKey = (mode: GameMode, difficulty: Difficulty) => {
   return `${SCORES_KEY_PREFIX}_${mode}_${difficulty}`;
@@ -13,35 +41,66 @@ const getStorageKey = (mode: GameMode, difficulty: Difficulty) => {
 export const getLocalHighScores = (mode: GameMode, difficulty: Difficulty): ScoreEntry[] => {
   try {
     const raw = localStorage.getItem(getStorageKey(mode, difficulty));
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+
+    let parsed: ScoreEntry[] = JSON.parse(raw);
+    
+    // CLEANUP: Jalankan deduplikasi setiap kali ambil data
+    // Ini akan otomatis menghapus duplikat lama yang sudah terlanjur tersimpan
+    const cleanData = deduplicateScores(parsed);
+    
+    // Jika data berubah (karena ada yang dihapus), simpan balik ke storage agar bersih permanen
+    if (cleanData.length !== parsed.length) {
+      localStorage.setItem(getStorageKey(mode, difficulty), JSON.stringify(cleanData));
+    }
+
+    return cleanData;
   } catch {
     return [];
   }
 };
 
-const saveToLocalStorage = (mode: GameMode, difficulty: Difficulty, entry: ScoreEntry) => {
-  const scores = getLocalHighScores(mode, difficulty);
-  const existingIndex = scores.findIndex(s => s.name.toLowerCase().trim() === entry.name.toLowerCase().trim());
+// Fungsi Cek Nama Tersedia (Untuk UI Input Nama)
+export const checkLocalNameExists = (name: string): boolean => {
+  const cleanName = name.trim().toLowerCase();
+  if (!cleanName) return false;
 
-  if (existingIndex !== -1) {
-    if (entry.score > scores[existingIndex].score) {
-      scores[existingIndex] = entry;
-    }
-  } else {
-    scores.push(entry);
-  }
+  // Cek di semua key storage yang mungkin (karena nama user biasanya global di device)
+  // Kita cek sample dari mode 'difference' difficulty 'easy' sebagai representasi profil
+  // Atau lebih baik cek apakah nama ini pernah main game ini sebelumnya
   
-  // Sort Local
-  const updated = scores
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10);
+  // Sederhananya, kita cek keys yang ada
+  for (let i = 0; i < localStorage.length; i++) {
+     const key = localStorage.key(i);
+     if (key && key.startsWith(SCORES_KEY_PREFIX)) {
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          const data: ScoreEntry[] = JSON.parse(raw);
+          if (data.some(d => d.name.trim().toLowerCase() === cleanName)) {
+            return true;
+          }
+        }
+     }
+  }
+  return false;
+};
+
+const saveToLocalStorage = (mode: GameMode, difficulty: Difficulty, entry: ScoreEntry) => {
+  // Ambil data (yang sudah otomatis bersih karena getLocalHighScores memanggil deduplicate)
+  const scores = getLocalHighScores(mode, difficulty);
+  
+  // Masukkan data baru
+  scores.push(entry);
+
+  // Bersihkan lagi (untuk merge skor baru dengan lama jika nama sama)
+  // Limit 20 besar
+  const updated = deduplicateScores(scores).slice(0, 20);
     
   localStorage.setItem(getStorageKey(mode, difficulty), JSON.stringify(updated));
 };
 
 // --- SUPABASE CLOUD LOGIC ---
 
-// Mengambil Skor Tertinggi dari Cloud
 export const getGlobalHighScores = async (mode: GameMode, difficulty: Difficulty): Promise<ScoreEntry[]> => {
   try {
     const { data, error } = await supabase
@@ -50,7 +109,7 @@ export const getGlobalHighScores = async (mode: GameMode, difficulty: Difficulty
       .eq('mode', mode)
       .eq('difficulty', difficulty)
       .order('score', { ascending: false })
-      .limit(20);
+      .limit(50); // Ambil lebih banyak dulu untuk di-filter client side
 
     if (error) {
       console.error("Supabase fetch error:", error);
@@ -58,11 +117,14 @@ export const getGlobalHighScores = async (mode: GameMode, difficulty: Difficulty
     }
 
     if (data) {
-      return data.map((row: any) => ({
+      const formatted = data.map((row: any) => ({
         name: row.name,
         score: row.score,
         date: new Date(row.created_at).getTime()
       }));
+      
+      // Filter duplikat dari server juga (tampilan bersih)
+      return deduplicateScores(formatted).slice(0, 20);
     }
     return [];
   } catch (err) {
@@ -71,40 +133,31 @@ export const getGlobalHighScores = async (mode: GameMode, difficulty: Difficulty
   }
 };
 
-// Menyimpan Skor ke Cloud (Logika: Cek Duplikat -> Update jika Higher)
 const saveToCloud = async (mode: GameMode, difficulty: Difficulty, name: string, score: number) => {
   const cleanName = name.trim();
   
   try {
-    // 1. Cek apakah user dengan nama ini sudah ada di mode & diff ini?
     const { data: existingData, error: fetchError } = await supabase
       .from('leaderboard')
       .select('*')
-      .eq('name', cleanName)
+      .ilike('name', cleanName)
       .eq('mode', mode)
       .eq('difficulty', difficulty)
-      .single();
+      .maybeSingle(); 
 
-    if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = not found JSON info
-       // Error beneran (koneksi dll)
+    if (fetchError) {
        console.error("Error checking existing user:", fetchError);
        return;
     }
 
     if (existingData) {
-      // 2a. Jika ada, cek skornya
       if (score > existingData.score) {
-        // Update hanya jika skor baru lebih tinggi
         await supabase
           .from('leaderboard')
-          .update({ score: score, created_at: new Date().toISOString() }) // Update date juga biar fresh
+          .update({ score: score, created_at: new Date().toISOString() }) 
           .eq('id', existingData.id);
-      } else {
-        // Skor lebih rendah atau sama, abaikan
-        console.log("Score not higher than existing record. Skipped.");
       }
     } else {
-      // 2b. Jika belum ada, Insert baru
       await supabase
         .from('leaderboard')
         .insert([
@@ -126,18 +179,17 @@ const saveToCloud = async (mode: GameMode, difficulty: Difficulty, name: string,
 export const saveScore = (mode: GameMode, difficulty: Difficulty, score: number, playerName: string) => {
   if (score <= 0) return;
 
-  const finalName = playerName || "Detektif Misterius";
+  const cleanName = playerName && playerName.trim().length > 0 ? playerName.trim() : "Detektif Misterius";
+  
   const entry: ScoreEntry = {
-    name: finalName,
+    name: cleanName,
     score,
     date: Date.now()
   };
 
-  // 1. Simpan Lokal (Agar UI responsif / Offline support)
   saveToLocalStorage(mode, difficulty, entry);
 
-  // 2. Simpan Cloud (Fire and forget, biar gak nge-block UI)
   if (navigator.onLine) {
-    saveToCloud(mode, difficulty, finalName, score);
+    saveToCloud(mode, difficulty, cleanName, score);
   }
 };

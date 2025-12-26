@@ -5,6 +5,48 @@ const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 let ctx: AudioContext | null = null;
 let noiseBuffer: AudioBuffer | null = null;
 
+export type MusicTrack = 'fun' | 'adventure' | 'chill';
+
+// Preferences State
+let sfxEnabled = true;
+let musicEnabled = true;
+let currentTrack: MusicTrack = 'fun';
+
+// Load Settings from Storage on Init
+const loadAudioSettings = () => {
+  const storedSfx = localStorage.getItem('sfx_enabled');
+  const storedMusic = localStorage.getItem('music_enabled');
+  const storedTrack = localStorage.getItem('music_track');
+
+  if (storedSfx !== null) sfxEnabled = storedSfx === 'true';
+  if (storedMusic !== null) musicEnabled = storedMusic === 'true';
+  if (storedTrack !== null) currentTrack = storedTrack as MusicTrack;
+};
+loadAudioSettings();
+
+// Export setters for Settings Modal
+export const setSFXEnabled = (enabled: boolean) => {
+  sfxEnabled = enabled;
+  localStorage.setItem('sfx_enabled', String(enabled));
+};
+export const setMusicEnabled = (enabled: boolean) => {
+  musicEnabled = enabled;
+  localStorage.setItem('music_enabled', String(enabled));
+  if (!enabled) stopMusic();
+  else if (music.difficulty) startMusic(music.difficulty);
+};
+export const setMusicTrack = (track: MusicTrack) => {
+  currentTrack = track;
+  localStorage.setItem('music_track', track);
+  // Restart music to apply new track pattern if playing
+  if (music.isPlaying) {
+    stopMusic();
+    startMusic(music.difficulty);
+  }
+};
+export const getAudioState = () => ({ sfxEnabled, musicEnabled, currentTrack });
+
+
 const getCtx = () => {
   if (!ctx) {
     ctx = new AudioContext();
@@ -21,7 +63,9 @@ const getCtx = () => {
 
 // --- Sound Effects (SFX) ---
 
-export const playSound = (type: 'click' | 'correct' | 'wrong' | 'win' | 'hint' | 'lock') => {
+export const playSound = (type: 'click' | 'correct' | 'wrong' | 'win' | 'lose' | 'hint' | 'lock') => {
+  if (!sfxEnabled) return;
+
   const context = getCtx();
   if (context.state === 'suspended') {
     context.resume().catch(() => {});
@@ -55,7 +99,6 @@ export const playSound = (type: 'click' | 'correct' | 'wrong' | 'win' | 'hint' |
       osc.start(t);
       osc.stop(t + 0.4);
       
-      // Sparkle layer
       const osc2 = context.createOscillator();
       const gain2 = context.createGain();
       osc2.connect(gain2);
@@ -70,18 +113,35 @@ export const playSound = (type: 'click' | 'correct' | 'wrong' | 'win' | 'hint' |
       break;
 
     case 'wrong':
-      // Low buzz
+      // Dull Error
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(150, t);
-      osc.frequency.linearRampToValueAtTime(100, t + 0.3);
-      gain.gain.setValueAtTime(0.2, t);
+      osc.frequency.linearRampToValueAtTime(50, t + 0.3);
+      gain.gain.setValueAtTime(0.3, t);
       gain.gain.linearRampToValueAtTime(0, t + 0.3);
       osc.start(t);
       osc.stop(t + 0.3);
       break;
+      
+    case 'lose':
+      // Sad Descending Slide (Wah-wah-wah)
+      const loseNotes = [400, 350, 300, 250];
+      loseNotes.forEach((freq, i) => {
+        const o = context.createOscillator();
+        const g = context.createGain();
+        o.connect(g);
+        g.connect(context.destination);
+        o.type = 'triangle';
+        o.frequency.setValueAtTime(freq, t + i * 0.4);
+        o.frequency.linearRampToValueAtTime(freq - 20, t + i * 0.4 + 0.3);
+        g.gain.setValueAtTime(0.2, t + i * 0.4);
+        g.gain.linearRampToValueAtTime(0, t + i * 0.4 + 0.3);
+        o.start(t + i * 0.4);
+        o.stop(t + i * 0.4 + 0.4);
+      });
+      break;
 
     case 'hint':
-      // Magic shimmer
       osc.type = 'sine';
       osc.frequency.setValueAtTime(800, t);
       osc.frequency.linearRampToValueAtTime(1600, t + 0.4);
@@ -92,7 +152,6 @@ export const playSound = (type: 'click' | 'correct' | 'wrong' | 'win' | 'hint' |
       break;
       
     case 'lock':
-      // Dull thud
       osc.type = 'square';
       osc.frequency.setValueAtTime(200, t);
       gain.gain.setValueAtTime(0.1, t);
@@ -102,19 +161,20 @@ export const playSound = (type: 'click' | 'correct' | 'wrong' | 'win' | 'hint' |
       break;
 
     case 'win':
-      // Fanfare
-      const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98]; // C Major Arp
+      // Victory Fanfare (Celebratory)
+      const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50]; // C - E - G - C - G - C!
       notes.forEach((freq, i) => {
         const o = context.createOscillator();
         const g = context.createGain();
         o.connect(g);
         g.connect(context.destination);
-        o.type = 'triangle';
+        o.type = i === notes.length - 1 ? 'square' : 'triangle';
         o.frequency.value = freq;
-        g.gain.setValueAtTime(0.1, t + i * 0.08);
-        g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.08 + 0.6);
-        o.start(t + i * 0.08);
-        o.stop(t + i * 0.08 + 0.6);
+        const duration = i === notes.length - 1 ? 0.8 : 0.2;
+        g.gain.setValueAtTime(0.15, t + i * 0.15);
+        g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.15 + duration);
+        o.start(t + i * 0.15);
+        o.stop(t + i * 0.15 + duration);
       });
       break;
   }
@@ -148,7 +208,7 @@ const playKick = (ctx: AudioContext, time: number) => {
 
   osc.frequency.setValueAtTime(150, time);
   osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.5);
-  gain.gain.setValueAtTime(0.6, time); // Volume Kick
+  gain.gain.setValueAtTime(0.6, time); 
   gain.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
 
   osc.start(time);
@@ -160,7 +220,6 @@ const playHiHat = (ctx: AudioContext, time: number) => {
   const source = ctx.createBufferSource();
   source.buffer = noiseBuffer;
   const gain = ctx.createGain();
-  // Filter to make it sound like a hat
   const filter = ctx.createBiquadFilter();
   filter.type = 'highpass';
   filter.frequency.value = 5000;
@@ -169,7 +228,7 @@ const playHiHat = (ctx: AudioContext, time: number) => {
   filter.connect(gain);
   gain.connect(ctx.destination);
 
-  gain.gain.setValueAtTime(0.15, time); // Volume Hat
+  gain.gain.setValueAtTime(0.1, time); 
   gain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
   
   source.start(time);
@@ -179,12 +238,12 @@ const playHiHat = (ctx: AudioContext, time: number) => {
 const playBass = (ctx: AudioContext, time: number, freq: number) => {
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
-  osc.type = 'square'; // Buzzier bass
+  osc.type = 'square';
   osc.connect(gain);
   gain.connect(ctx.destination);
 
   osc.frequency.setValueAtTime(freq, time);
-  gain.gain.setValueAtTime(0.15, time); // Volume Bass
+  gain.gain.setValueAtTime(0.1, time);
   gain.gain.linearRampToValueAtTime(0, time + 0.2);
   
   osc.start(time);
@@ -199,8 +258,7 @@ const playLead = (ctx: AudioContext, time: number, freq: number, type: Oscillato
   gain.connect(ctx.destination);
 
   osc.frequency.setValueAtTime(freq, time);
-  // Envelope agar "plucky"
-  gain.gain.setValueAtTime(0.08, time); // Volume Lead (jangan terlalu keras)
+  gain.gain.setValueAtTime(0.05, time); 
   gain.gain.exponentialRampToValueAtTime(0.001, time + 0.4);
   
   osc.start(time);
@@ -208,62 +266,64 @@ const playLead = (ctx: AudioContext, time: number, freq: number, type: Oscillato
 };
 
 // --- Composition Data (16 Steps Loop) ---
-// 0 = rest, number = frequency
+// Support multiple styles: Fun, Adventure, Chill
 
-// C Major Pentatonicish for Happy Vibes
-const PATTERNS: Record<string, any> = {
-  easy: {
-    bpm: 110, // Santai tapi gerak
-    kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], // Four on floor
-    hat:  [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0], // Offbeat
-    bass: [130.8, 0, 0, 0, 130.8, 0, 0, 0, 174.6, 0, 0, 0, 196.0, 0, 196.0, 0], // C -> F -> G
-    lead: [523.25, 0, 659.25, 0, 783.99, 0, 523.25, 0, 880.00, 0, 783.99, 0, 659.25, 0, 0, 0],
-    leadType: 'sine'
+const MUSIC_PATTERNS: Record<MusicTrack, Record<string, any>> = {
+  fun: {
+    // Happy, Major Pentatonic
+    easy: { bpm: 110, kickPattern: [1,0,0,0,1,0,0,0], leadType: 'sine', baseFreq: 523.25 },
+    medium: { bpm: 130, kickPattern: [1,0,1,0,1,0,1,0], leadType: 'square', baseFreq: 440.0 },
+    hard: { bpm: 150, kickPattern: [1,1,0,1,1,0,1,1], leadType: 'sawtooth', baseFreq: 587.33 }
   },
-  medium: {
-    bpm: 135, // Energik!
-    kick: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], // Driving beat
-    hat:  [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], // Fast hats
-    bass: [110.0, 0, 110.0, 0, 164.8, 0, 110.0, 0, 146.8, 0, 146.8, 0, 130.8, 0, 130.8, 123.4], // A Minor Funky
-    lead: [0, 440, 0, 523, 0, 440, 0, 659, 0, 523, 0, 587, 0, 523, 493, 0],
-    leadType: 'square'
+  adventure: {
+    // Epic, Minor, Driving
+    easy: { bpm: 100, kickPattern: [1,0,0,1,0,0,1,0], leadType: 'triangle', baseFreq: 440.0 },
+    medium: { bpm: 125, kickPattern: [1,1,0,0,1,1,0,0], leadType: 'sawtooth', baseFreq: 392.0 },
+    hard: { bpm: 145, kickPattern: [1,0,1,1,1,0,1,0], leadType: 'square', baseFreq: 293.66 }
   },
-  hard: {
-    bpm: 155, // Intense!
-    kick: [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0], // Breakbeat style
-    hat:  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // Running hats
-    bass: [87.31, 0, 87.31, 0, 116.5, 0, 116.5, 0, 98.00, 0, 98.00, 0, 130.8, 130.8, 73.42, 0], // F -> Bb -> G -> C
-    lead: [349.2, 440.0, 523.2, 698.4, 349.2, 440.0, 523.2, 698.4, 392.0, 493.9, 587.3, 783.9, 523.2, 659.2, 0, 0], // Fast Arpeggios
-    leadType: 'sawtooth'
+  chill: {
+    // Slower, Smoother
+    easy: { bpm: 80, kickPattern: [1,0,0,0,0,0,1,0], leadType: 'sine', baseFreq: 329.63 },
+    medium: { bpm: 95, kickPattern: [1,0,0,1,0,0,0,0], leadType: 'triangle', baseFreq: 349.23 },
+    hard: { bpm: 110, kickPattern: [1,0,1,0,0,1,0,0], leadType: 'sine', baseFreq: 392.00 }
   }
 };
 
 const scheduleStep = (difficulty: string, time: number) => {
   const ctx = getCtx();
-  const song = PATTERNS[difficulty] || PATTERNS['easy'];
+  
+  // Select Pattern based on current Track Setting
+  const styleConfig = MUSIC_PATTERNS[currentTrack][difficulty] || MUSIC_PATTERNS['fun']['easy'];
   const step = music.currentStep % 16;
+  const beatIndex = step % 8; // simplified pattern index
 
   // 1. Kick
-  if (song.kick[step]) playKick(ctx, time);
+  if (styleConfig.kickPattern[beatIndex]) playKick(ctx, time);
 
-  // 2. Hat
-  if (song.hat[step]) playHiHat(ctx, time);
+  // 2. Hat (Every offbeat)
+  if (step % 2 !== 0) playHiHat(ctx, time);
 
-  // 3. Bass
-  if (song.bass[step]) playBass(ctx, time, song.bass[step]);
+  // 3. Bass (Root Note on beat 1 & 9)
+  if (step === 0 || step === 8) playBass(ctx, time, styleConfig.baseFreq / 2);
 
-  // 4. Lead
-  if (song.lead[step]) playLead(ctx, time, song.lead[step], song.leadType);
+  // 4. Lead (Simple Arp logic)
+  if ([0, 3, 6, 9, 12].includes(step)) {
+    // Generate a simple scale offset
+    const scale = [1, 1.25, 1.5, 1.33, 1.5, 2]; // Major-ish intervals
+    const note = styleConfig.baseFreq * scale[Math.floor(Math.random() * scale.length)];
+    playLead(ctx, time, note, styleConfig.leadType);
+  }
 
-  // Advance step
   music.currentStep++;
 };
 
 const sequencerLoop = () => {
+  if (!musicEnabled) return;
+
   const ctx = getCtx();
-  const song = PATTERNS[music.difficulty] || PATTERNS['easy'];
-  const secondsPerStep = 60.0 / song.bpm / 4; // 16th notes
-  const lookahead = 0.1; // seconds
+  const styleConfig = MUSIC_PATTERNS[currentTrack][music.difficulty] || MUSIC_PATTERNS['fun']['easy'];
+  const secondsPerStep = 60.0 / styleConfig.bpm / 4; // 16th notes
+  const lookahead = 0.1;
 
   while (music.nextStepTime < ctx.currentTime + lookahead) {
     scheduleStep(music.difficulty, music.nextStepTime);
@@ -274,12 +334,12 @@ const sequencerLoop = () => {
 };
 
 export const startMusic = (difficulty: string) => {
+  if (!musicEnabled) return;
   if (music.isPlaying && music.difficulty === difficulty) return;
   
   const ctx = getCtx();
   if (ctx.state === 'suspended') ctx.resume();
 
-  // Reset if switching difficulty
   if (music.isPlaying) stopMusic();
 
   music.isPlaying = true;
