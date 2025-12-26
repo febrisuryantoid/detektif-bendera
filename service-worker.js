@@ -1,6 +1,6 @@
 
-const CACHE_NAME = 'detektif-bendera-v2-offline';
-const RUNTIME_CACHE = 'detektif-bendera-runtime-v2';
+const CACHE_NAME = 'detektif-bendera-v3-offline';
+const RUNTIME_CACHE = 'detektif-bendera-runtime-v3';
 
 // DAFTAR ASET WAJIB (CORE ASSETS)
 // Ini akan didownload SAAT INSTALASI. Jika salah satu gagal, install gagal.
@@ -12,7 +12,7 @@ const PRECACHE_URLS = [
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Titan+One&display=swap',
   // App Icon (Agar ikon tetap ada saat offline)
-  'https://cdn-icons-png.flaticon.com/512/2909/2909440.png'
+  'https://cdn-icons-png.flaticon.com/512/4322/4322992.png'
 ];
 
 // Install Handler
