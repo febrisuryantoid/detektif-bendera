@@ -1,0 +1,26 @@
+
+{
+  "name": "Detektif Bendera",
+  "short_name": "Detektif Bendera",
+  "description": "Asah pengetahuan nama Bendera Dunia. Game edukasi tebak nama dan cari perbedaan bendera.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f0f9ff",
+  "theme_color": "#38bdf8",
+  "orientation": "landscape",
+  "categories": ["education", "games", "puzzle"],
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2909/2909440.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2909/2909440.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

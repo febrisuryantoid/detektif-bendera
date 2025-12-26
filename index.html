@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#38bdf8" />
+    <meta name="description" content="Asah pengetahuan nama Bendera Dunia. Game edukasi seru untuk anak!">
+    
+    <!-- PWA & Mobile Capabilties -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Detektif Bendera">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2909/2909440.png">
+    
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2909/2909440.png" />
+    <title>Detektif Bendera</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Titan+One&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Fredoka', sans-serif;
+        background-color: #f0f9ff;
+        user-select: none;
+        -webkit-user-select: none;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        touch-action: manipulation; /* Improves touch response */
+      }
+      .font-titan {
+        font-family: 'Titan One', cursive;
+      }
+      .text-stroke-3 {
+        -webkit-text-stroke: 3px #000;
+        paint-order: stroke fill;
+      }
+      /* Stroke lebih tipis untuk mobile agar tulisan terbaca */
+      @media (max-width: 640px) {
+        .text-stroke-3 {
+          -webkit-text-stroke: 1.5px #000;
+        }
+      }
+      .text-stroke-2 {
+        -webkit-text-stroke: 1.5px rgba(255,255,255,0.5);
+      }
+      .shake {
+        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+      }
+      @keyframes shake {
+        10%, 90% { transform: translate3d(-1px, 0, 0); }
+        20%, 80% { transform: translate3d(2px, 0, 0); }
+        30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+        40%, 60% { transform: translate3d(4px, 0, 0); }
+      }
+      .pop-in {
+        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      @keyframes popIn {
+        0% { opacity: 0; transform: scale(0.5); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+      .animate-spin-slow {
+        animation: spin 20s linear infinite;
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      
+      /* --- ANIMASI BENDERA BARU (NO ROTATION) --- */
+
+      /* 1. Horizontal Drift - Geser Kiri Kanan Saja */
+      .animate-drift-right { animation: driftRight linear infinite; }
+      .animate-drift-left { animation: driftLeft linear infinite; }
+      
+      @keyframes driftRight {
+        0% { transform: translateX(-20vw) translateY(0); }
+        50% { transform: translateX(50vw) translateY(-20px); }
+        100% { transform: translateX(120vw) translateY(0); }
+      }
+      
+      @keyframes driftLeft {
+        0% { transform: translateX(120vw) translateY(0); }
+        50% { transform: translateX(50vw) translateY(20px); }
+        100% { transform: translateX(-20vw) translateY(0); }
+      }
+
+      /* 2. Vertical Float Up - Naik ke atas Saja */
+      .animate-float-up { animation: floatUp linear infinite; }
+      @keyframes floatUp {
+        0% { transform: translateY(110vh) translateX(0); }
+        25% { transform: translateY(75vh) translateX(20px); }
+        50% { transform: translateY(50vh) translateX(-20px); }
+        75% { transform: translateY(25vh) translateX(10px); }
+        100% { transform: translateY(-20vh) translateX(0); }
+      }
+
+      /* 3. Orbital - Tetap memutar posisi tapi bendera tegak */
+      .animate-orbit-cw { animation: orbitCW linear infinite; }
+      .animate-orbit-ccw { animation: orbitCCW linear infinite; }
+
+      @keyframes orbitCW {
+        from { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+        to   { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+      }
+      @keyframes orbitCCW {
+        from { transform: rotate(360deg) translateX(200px) rotate(-360deg); }
+        to   { transform: rotate(0deg) translateX(200px) rotate(0deg); }
+      }
+
+      /* 4. Tumble - Diubah jadi jatuh lurus (Rain) */
+      .animate-tumble { animation: tumble linear infinite; }
+      @keyframes tumble {
+        0% { transform: translateY(-20vh) translateX(0); }
+        100% { transform: translateY(120vh) translateX(20px); }
+      }
+
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.3"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
