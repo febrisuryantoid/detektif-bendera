@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type Language = 'id' | 'en';
@@ -7,12 +8,18 @@ interface Translation {
     title: string;
     subtitle: string;
     tagline: string;
+    // Difference Mode Descriptions
     btnEasy: string;
     subEasy: string;
     btnMedium: string;
     subMedium: string;
     btnHard: string;
     subHard: string;
+    // Quiz Mode Descriptions (NEW)
+    subEasyQuiz: string;
+    subMediumQuiz: string;
+    subHardQuiz: string;
+    
     btnLeaderboard: string;
     btnInstall: string;
     modeDiff: string;
@@ -77,6 +84,22 @@ interface Translation {
     footer: string;
     btnClose: string;
   };
+  installWizard: {
+    welcome: string;
+    introDesc: string;
+    introHighlight: string;
+    btnSetup: string;
+    permTitle: string;
+    permDesc: string;
+    permStorage: string;
+    permStorageDesc: string;
+    permNotify: string;
+    permNotifyDesc: string;
+    btnGrant: string;
+    downloadTitle: string;
+    downloadDesc: string;
+    complete: string;
+  };
 }
 
 const translations: Record<Language, Translation> = {
@@ -85,12 +108,21 @@ const translations: Record<Language, Translation> = {
       title: "DETEKTIF",
       subtitle: "BENDERA",
       tagline: "Belajar Mengenal Negara dengan Cara Seru",
+      
       btnEasy: "Mudah",
-      subEasy: "Santai & Gampang",
+      subEasy: "Santai & Gampang", // Diff
+      
       btnMedium: "Sedang",
-      subMedium: "Tantangan Seru",
+      subMedium: "Tantangan Seru", // Diff
+      
       btnHard: "Sulit",
-      subHard: "Ahli Detektif!",
+      subHard: "Ahli Detektif!", // Diff
+
+      // Quiz Mode Descriptions
+      subEasyQuiz: "Negara Populer",
+      subMediumQuiz: "Bendera Mirip",
+      subHardQuiz: "Ahli Geografi!",
+
       btnLeaderboard: "Papan Peringkat",
       btnInstall: "Install App",
       modeDiff: "Cari Beda",
@@ -154,6 +186,22 @@ const translations: Record<Language, Translation> = {
       fonts: "Font",
       footer: "Dibuat dengan ❤️ untuk Anak Indonesia",
       btnClose: "Tutup"
+    },
+    installWizard: {
+      welcome: "SELAMAT DATANG!",
+      introDesc: "Ayo siapkan game untuk pengalaman terbaik. Kami akan mengunduh data agar kamu bisa main",
+      introHighlight: "100% Offline",
+      btnSetup: "MULAI PENYIAPAN",
+      permTitle: "IZIN AKSES",
+      permDesc: "Izinkan penyimpanan untuk data game offline dan notifikasi untuk info rekor dunia.",
+      permStorage: "Penyimpanan Offline",
+      permStorageDesc: "Wajib untuk main tanpa internet.",
+      permNotify: "Info Rekor Dunia",
+      permNotifyDesc: "Dapat kabar jika ranking #1 pecah.",
+      btnGrant: "IZINKAN & LANJUT",
+      downloadTitle: "MENGUNDUH...",
+      downloadDesc: "Menyiapkan aset offline. Mohon tunggu...",
+      complete: "Selesai"
     }
   },
   en: {
@@ -161,12 +209,21 @@ const translations: Record<Language, Translation> = {
       title: "DETECTIVE",
       subtitle: "FLAGS",
       tagline: "Learn Countries in a Fun Way",
+      
       btnEasy: "Easy",
-      subEasy: "Relaxed & Simple",
+      subEasy: "Relaxed & Simple", // Diff
+      
       btnMedium: "Medium",
-      subMedium: "Exciting Challenge",
+      subMedium: "Exciting Challenge", // Diff
+      
       btnHard: "Hard",
-      subHard: "Detective Expert!",
+      subHard: "Detective Expert!", // Diff
+
+      // Quiz Mode Descriptions
+      subEasyQuiz: "Popular Countries",
+      subMediumQuiz: "Tricky Flags",
+      subHardQuiz: "Geography Expert!",
+
       btnLeaderboard: "Leaderboard",
       btnInstall: "Install App",
       modeDiff: "Find Diff",
@@ -230,6 +287,22 @@ const translations: Record<Language, Translation> = {
       fonts: "Fonts",
       footer: "Made with ❤️ for Kids Worldwide",
       btnClose: "Close"
+    },
+    installWizard: {
+      welcome: "WELCOME!",
+      introDesc: "Let's set up the game for the best experience. We will download data so you can play",
+      introHighlight: "100% Offline",
+      btnSetup: "START SETUP",
+      permTitle: "PERMISSIONS",
+      permDesc: "Please allow storage to save game data locally and notifications for world record updates.",
+      permStorage: "Offline Storage",
+      permStorageDesc: "Required for offline play.",
+      permNotify: "Record Alerts",
+      permNotifyDesc: "Notify when #1 is beaten.",
+      btnGrant: "GRANT & CONTINUE",
+      downloadTitle: "DOWNLOADING...",
+      downloadDesc: "Preparing offline assets. Please wait...",
+      complete: "Complete"
     }
   }
 };

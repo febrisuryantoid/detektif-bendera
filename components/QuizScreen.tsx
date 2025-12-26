@@ -57,157 +57,161 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({ level, currentTotalScore
     if (isGameOver || isWon) return;
     
     setSelectedOptionCode(code);
-
+    
     if (code === level.correctOption) {
-      // BENAR
       playSound('correct');
       setIsWon(true);
       completeTriggered.current = true;
       
-      const baseScore = 100;
       const timeBonus = timeLeft * 10;
-      const finalScore = baseScore + timeBonus;
-
+      const score = 100 + timeBonus;
+      
       setTimeout(() => {
-        onLevelComplete(finalScore, true);
-      }, 1200);
+        onLevelComplete(score, true);
+      }, 1000);
     } else {
-      // SALAH - GAME OVER
       playSound('wrong');
       setIsGameOver(true);
       completeTriggered.current = true;
       
       setTimeout(() => {
         onLevelComplete(0, false);
-      }, 1000);
+      }, 1200);
     }
   };
 
-  const getBgColor = () => {
-    if (isGameOver) return 'bg-gray-200';
+  const getBackgroundColor = () => {
     if (isWon) return 'bg-green-100';
-    switch (level.difficulty) {
-      case 'easy': return 'bg-yellow-50';
-      case 'medium': return 'bg-blue-50';
-      case 'hard': return 'bg-purple-50';
-      default: return 'bg-white';
-    }
+    if (isGameOver) return 'bg-red-50';
+    return 'bg-indigo-50';
   };
 
   return (
-    <div className={`flex flex-col h-screen overflow-hidden font-sans transition-colors duration-500 ${getBgColor()}`}>
+    <div className={`fixed inset-0 flex flex-col font-sans transition-colors duration-300 ${getBackgroundColor()}`}>
       
-      {/* HEADER */}
-      <div className="bg-white px-4 pt-3 pb-4 rounded-b-[2rem] shadow-[0_8px_0_rgba(0,0,0,0.05)] border-b-4 border-gray-100 z-30 relative shrink-0">
-        <div className="flex justify-between items-center mb-3">
-          <button 
-            onClick={() => { playSound('click'); onGoHome(); }} 
-            className="w-12 h-12 flex items-center justify-center bg-gray-200 rounded-2xl border-b-4 border-gray-400 active:border-b-0 active:translate-y-1 transition-all shadow-sm group"
-          >
-            <Home className="text-gray-600 group-hover:scale-110 transition-transform" size={24} strokeWidth={3} />
-          </button>
-          
-          {/* Level Badge */}
-          <div className="flex flex-col items-center">
-            <div className="bg-sky-500 text-white text-xs font-black px-4 py-1.5 rounded-full shadow-sm uppercase tracking-widest border-b-4 border-sky-700">
-              {t.quiz.question} {level.levelNumber}
-            </div>
-          </div>
-
-          <div className="flex flex-col items-end">
-             <div className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-xl border-b-4 border-yellow-600 flex items-center gap-1 shadow-sm">
-                <Trophy size={16} strokeWidth={3} />
-                <span className="font-black text-sm">{currentTotalScore}</span>
+      {/* 
+         TOP HEADER BAR 
+         Compact, flex row. Contains Home, Level, Timer, Score.
+      */}
+      <div className="bg-white/90 backdrop-blur-md px-3 py-2 sm:px-4 sm:py-3 shadow-sm border-b-2 border-indigo-100 flex items-center justify-between z-20 shrink-0 h-14 sm:h-16">
+         <div className="flex items-center gap-2 sm:gap-4">
+             <button 
+                onClick={() => { playSound('click'); onGoHome(); }}
+                className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-gray-100 rounded-lg sm:rounded-xl border-b-[3px] border-gray-300 active:border-b-0 active:translate-y-0.5 transition-all"
+             >
+                <Home size={16} className="text-gray-600 sm:w-5 sm:h-5" />
+             </button>
+             <div className="bg-indigo-500 text-white text-[10px] sm:text-xs font-black px-2 sm:px-3 py-1 rounded-lg border-b-[3px] border-indigo-700">
+                LEVEL {level.levelNumber}
              </div>
-          </div>
-        </div>
+         </div>
 
-        {/* Timer Bar & Header Bubble */}
-        <div className="w-full max-w-lg mx-auto">
-           {/* Header Title Bubble (Pengganti teks di atas gambar) */}
-           <div className="bg-indigo-100 rounded-2xl p-2 border-4 border-indigo-300 relative text-center shadow-sm mb-3">
-               {/* Timer Badge Floating */}
-               <div className={`absolute -top-3 -right-2 px-3 py-1 rounded-full border-4 font-black text-xs flex items-center gap-1 shadow-md transform rotate-2 z-10
-                  ${timeLeft <= 5 ? 'bg-red-500 border-red-700 text-white animate-pulse' : 'bg-white border-gray-200 text-gray-700'}
-               `}>
-                  <Clock size={12} strokeWidth={3} /> {timeLeft}s
-               </div>
-
-               <div className="flex items-center justify-center gap-2">
-                 <Brain size={20} className="text-indigo-600" />
-                 <h1 className="text-lg sm:text-xl font-black text-indigo-900 uppercase leading-tight font-titan">
-                   {t.quiz.guess}
-                 </h1>
-               </div>
-           </div>
-        </div>
+         <div className="flex items-center gap-2 sm:gap-4">
+            <div className={`
+              flex items-center gap-1.5 px-2 sm:px-3 py-1 rounded-lg font-black text-xs sm:text-sm border-b-[3px]
+              ${timeLeft <= 5 ? 'bg-red-500 border-red-700 text-white animate-pulse' : 'bg-white border-gray-200 text-gray-700'}
+            `}>
+               <Clock size={14} className="sm:w-4 sm:h-4" /> {timeLeft}
+            </div>
+            <div className="bg-yellow-400 text-yellow-900 px-2 sm:px-3 py-1 rounded-lg border-b-[3px] border-yellow-600 flex items-center gap-1 text-xs sm:text-sm font-black">
+               <Trophy size={14} className="sm:w-4 sm:h-4" /> {currentTotalScore}
+            </div>
+         </div>
       </div>
 
-      {/* GAME CONTENT - Scrollable */}
-      <div className="flex-1 overflow-y-auto px-4 py-2 w-full flex flex-col items-center custom-scrollbar">
-        <div className="w-full max-w-lg flex flex-col items-center justify-start h-full">
-          
-          {/* Flag Image Card */}
-          {/* Menggunakan max-height dinamis agar di landscape tidak memakan semua layar */}
-          <div className="w-full bg-white rounded-3xl shadow-lg border-8 border-white mb-4 flex items-center justify-center relative overflow-hidden group shrink-0" 
-               style={{ minHeight: '180px', maxHeight: '35vh', aspectRatio: '4/3' }}>
-             
-             {imageError ? (
-                <div className="flex flex-col items-center text-gray-300">
-                   <ImageOff size={48} />
-                   <span className="text-xs font-bold mt-2">{t.quiz.errorImg}</span>
-                </div>
-             ) : (
-                <img 
-                  src={`https://flagcdn.com/w640/${level.flagCode}.png`}
-                  alt="Guess this flag"
-                  className="w-full h-full object-contain"
-                  onError={() => setImageError(true)}
-                />
-             )}
-          </div>
+      {/* 
+         MAIN CONTENT AREA
+         Using flex-1 to occupy all remaining vertical space.
+         Items centered. Flag scales to fit.
+      */}
+      <div className="flex-1 flex flex-col items-center justify-center w-full relative overflow-hidden p-2 sm:p-4">
+         
+         {/* Question Bubble - Floating minimal */}
+         <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full border border-indigo-100 shadow-sm animate-pop-in">
+            <h2 className="text-indigo-600 font-bold text-xs sm:text-sm uppercase tracking-wide flex items-center gap-2">
+               <Brain size={14} /> {t.quiz.guess}
+            </h2>
+         </div>
 
-          {/* Options Grid */}
-          <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 pb-6">
-             {level.options.map((code, idx) => {
-                const isSelected = selectedOptionCode === code;
-                const isCorrect = code === level.correctOption;
-                const countryName = getFlagName(code, lang);
-                
-                // Status Styling
-                let btnClass = "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"; // Default
-                
-                if (isSelected) {
-                   if (isCorrect) {
-                      btnClass = "bg-green-100 border-green-500 text-green-700 ring-4 ring-green-200";
-                   } else {
-                      btnClass = "bg-red-100 border-red-500 text-red-700 ring-4 ring-red-200 shake";
-                   }
-                } else if (isGameOver && isCorrect) {
-                   // Show correct answer when failed
-                   btnClass = "bg-green-50 border-green-300 text-green-600 opacity-60";
-                }
+         {/* FLAG CONTAINER - Dominant Element */}
+         <div className="w-full h-full flex items-center justify-center p-2 sm:p-8">
+            <div className={`
+               relative w-full h-full flex items-center justify-center
+               transition-all duration-500
+               ${isWon ? 'scale-110 drop-shadow-xl' : ''}
+               ${isGameOver ? 'opacity-50 grayscale blur-sm' : ''}
+            `}>
+               {imageError ? (
+                  <div className="flex flex-col items-center text-gray-400 gap-2">
+                     <ImageOff size={48} />
+                     <span className="text-xs font-bold">{t.quiz.errorImg}</span>
+                  </div>
+               ) : (
+                  <img 
+                    src={`https://flagcdn.com/w640/${level.flagCode}.png`}
+                    className="max-w-full max-h-full object-contain drop-shadow-lg rounded-md"
+                    alt="Quiz Flag"
+                    onError={() => setImageError(true)}
+                  />
+               )}
 
-                return (
-                   <button
-                      key={idx}
-                      onClick={() => handleOptionClick(code)}
-                      disabled={isWon || isGameOver}
-                      className={`
-                         w-full py-3 px-4 rounded-xl font-bold text-sm sm:text-base border-b-4 transition-all flex items-center justify-between
-                         active:border-b-0 active:translate-y-1 shadow-sm min-h-[60px]
-                         ${btnClass}
-                      `}
-                   >
-                      <span className="text-left leading-tight">{countryName}</span>
-                      {isSelected && isCorrect && <CheckCircle2 className="text-green-600 shrink-0 ml-2" />}
-                      {isSelected && !isCorrect && <XCircle className="text-red-600 shrink-0 ml-2" />}
-                   </button>
-                );
-             })}
-          </div>
-        </div>
+               {/* Result Overlays */}
+               {isWon && (
+                 <div className="absolute inset-0 flex items-center justify-center z-20 animate-pop-in">
+                    <CheckCircle2 size={80} className="text-green-500 bg-white rounded-full drop-shadow-2xl" fill="white" />
+                 </div>
+               )}
+               {isGameOver && (
+                 <div className="absolute inset-0 flex items-center justify-center z-20 animate-pop-in">
+                    <XCircle size={80} className="text-red-500 bg-white rounded-full drop-shadow-2xl" fill="white" />
+                 </div>
+               )}
+            </div>
+         </div>
       </div>
+
+      {/* 
+         OPTIONS DOCK
+         Fixed at bottom, compact grid.
+      */}
+      <div className="bg-white px-3 py-3 sm:px-6 sm:py-6 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border-t border-gray-100 z-30 shrink-0 rounded-t-3xl">
+         <div className="grid grid-cols-2 gap-2 sm:gap-4 max-w-3xl mx-auto">
+            {level.options.map((optionCode) => {
+               const isSelected = selectedOptionCode === optionCode;
+               const isCorrect = optionCode === level.correctOption;
+               
+               let btnClass = "bg-white border-gray-200 text-gray-700 hover:bg-gray-50";
+               
+               if (isWon && isCorrect) {
+                  btnClass = "bg-green-500 border-green-700 text-white ring-2 ring-green-300";
+               } else if (isGameOver && isCorrect) {
+                  btnClass = "bg-green-500 border-green-700 text-white opacity-80";
+               } else if (isSelected) {
+                  if (isCorrect) {
+                     btnClass = "bg-green-500 border-green-700 text-white";
+                  } else {
+                     btnClass = "bg-red-500 border-red-700 text-white shake";
+                  }
+               }
+
+               return (
+                  <button
+                    key={optionCode}
+                    onClick={() => handleOptionClick(optionCode)}
+                    disabled={isWon || isGameOver}
+                    className={`
+                      relative py-3 sm:py-4 px-2 rounded-xl border-b-[4px] font-black text-xs sm:text-base uppercase tracking-wide
+                      transition-all active:border-b-0 active:translate-y-1 shadow-sm flex items-center justify-center text-center leading-tight
+                      ${btnClass}
+                    `}
+                  >
+                     {getFlagName(optionCode, lang)}
+                  </button>
+               );
+            })}
+         </div>
+      </div>
+
     </div>
   );
 };

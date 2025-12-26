@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, Trophy, Crown, Calendar, Medal, Search, Brain, Star, Globe, WifiOff, Loader2 } from 'lucide-react';
 import { playSound } from '../utils/sound';
@@ -19,7 +18,6 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
-  // Effect untuk monitor koneksi internet
   useEffect(() => {
     const handleStatusChange = () => {
       setIsOnline(navigator.onLine);
@@ -32,30 +30,22 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
     };
   }, []);
 
-  // Effect Fetch Data
   useEffect(() => {
     let isMounted = true;
-
     const fetchData = async () => {
       setIsLoading(true);
-      
-      // 1. Ambil data lokal dulu (Instant Load)
       const localData = getLocalHighScores(mode, difficulty);
       if (isMounted) setScores(localData);
 
-      // 2. Jika online, ambil dari Supabase
       if (navigator.onLine) {
         const globalData = await getGlobalHighScores(mode, difficulty);
         if (isMounted && globalData.length > 0) {
           setScores(globalData);
         }
       }
-      
       if (isMounted) setIsLoading(false);
     };
-
     fetchData();
-
     return () => { isMounted = false; };
   }, [mode, difficulty, isOnline]);
 
@@ -70,42 +60,42 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
   };
 
   const getRankStyle = (index: number) => {
+    // RANK 1 (GOLD) - Pure White Number 1
     if (index === 0) return {
-      // GOLD: Richer Gradient + Black Stroke on Score
-      card: 'bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 border-yellow-600 text-white transform scale-105 z-10 shadow-xl',
-      badge: 'bg-white text-yellow-600 ring-4 ring-yellow-200',
-      icon: <Crown size={24} className="fill-yellow-500 text-yellow-600" />,
-      text: 'text-white drop-shadow-md',
-      score: 'text-white drop-shadow-md'
+      card: 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white transform scale-105 z-10 shadow-xl',
+      badge: 'bg-white/20 text-white ring-2 ring-white/50',
+      icon: <span className="font-titan text-2xl drop-shadow-md">1</span>, // Pure White "1"
+      text: 'text-white drop-shadow-sm',
+      score: 'text-white font-titan drop-shadow-md'
     };
+    // RANK 2 (SILVER)
     if (index === 1) return {
-      // SILVER: Cool Gray Gradient
-      card: 'bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 border-slate-400 text-slate-800 shadow-lg',
+      card: 'bg-gradient-to-br from-slate-100 to-slate-200 text-slate-800 shadow-md',
       badge: 'bg-white text-slate-600 ring-2 ring-slate-200',
-      icon: <Medal size={24} className="fill-slate-400 text-slate-500" />,
+      icon: <span className="font-black text-lg">2</span>,
       text: 'text-slate-800',
-      score: 'text-slate-900'
+      score: 'text-slate-900 font-titan'
     };
+    // RANK 3 (BRONZE)
     if (index === 2) return {
-      // BRONZE: Warm Orange/Brown Gradient
-      card: 'bg-gradient-to-br from-orange-100 via-orange-200 to-orange-300 border-orange-400 text-orange-900 shadow-lg',
+      card: 'bg-gradient-to-br from-orange-100 to-orange-200 text-orange-900 shadow-md',
       badge: 'bg-white text-orange-700 ring-2 ring-orange-200',
-      icon: <Medal size={24} className="fill-orange-400 text-orange-600" />,
+      icon: <span className="font-black text-lg">3</span>,
       text: 'text-orange-900',
-      score: 'text-orange-950'
+      score: 'text-orange-950 font-titan'
     };
+    // RANK 4+
     return {
-      // DEFAULT: White
-      card: 'bg-white border-gray-100 shadow-sm hover:shadow-md hover:scale-[1.01]',
+      card: 'bg-white shadow-sm hover:shadow-md border border-gray-100',
       badge: 'bg-gray-100 text-gray-500',
       icon: <span className="font-black text-sm">{index + 1}</span>,
       text: 'text-gray-700',
-      score: 'text-sky-500'
+      score: 'text-sky-500 font-titan'
     };
   };
 
   return (
-    <div className="min-h-screen bg-[#f0f9ff] flex flex-col items-center p-0 sm:p-4 font-sans relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-[#f0f9ff] flex flex-col items-center p-0 font-sans relative overflow-hidden">
       
       {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-sky-400 to-sky-200 rounded-b-[3rem] z-0 shadow-lg"></div>
@@ -113,65 +103,65 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
       <div className="absolute top-20 left-10 opacity-20 animate-pulse"><Crown size={80} fill="white" className="text-white" /></div>
 
       {/* Header Container */}
-      <div className="w-full max-w-lg z-10 flex flex-col items-center pt-6 px-4">
+      <div className="w-full max-w-lg z-10 flex flex-col items-center pt-4 sm:pt-6 px-4">
         
         {/* Navigation Bar */}
-        <div className="w-full flex items-center justify-between mb-6">
+        <div className="w-full flex items-center justify-between mb-4 sm:mb-6">
            <button 
             onClick={() => { playSound('click'); onBack(); }}
-            className="w-12 h-12 flex items-center justify-center bg-white rounded-2xl shadow-md border-b-4 border-gray-200 active:border-b-0 active:translate-y-1 transition-all"
+            className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white rounded-2xl shadow-md active:scale-95 transition-all"
            >
-            <ChevronLeft size={28} className="text-gray-600" />
+            <ChevronLeft size={24} className="text-gray-600" />
            </button>
            
-           <div className="bg-white/20 backdrop-blur-md px-6 py-2 rounded-full border-2 border-white/40 shadow-sm flex items-center gap-2">
+           <div className="bg-white/20 backdrop-blur-md px-4 sm:px-6 py-2 rounded-full border border-white/40 shadow-sm flex items-center gap-2">
              {isLoading && <Loader2 size={16} className="text-white animate-spin" />}
-             <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2 drop-shadow-md font-titan">
-               <Globe size={24} className="text-white" /> {t.leaderboard.title}
+             <h1 className="text-lg sm:text-xl font-black text-white uppercase tracking-wider flex items-center gap-2 drop-shadow-md font-titan">
+               <Globe size={20} className="text-white" /> {t.leaderboard.title}
              </h1>
            </div>
            
-           <div className="w-12 h-12 flex items-center justify-center">
+           <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
              {!isOnline && <WifiOff className="text-white/70" size={20} />}
            </div> 
         </div>
 
         {/* --- MAIN TABS (MODE) --- */}
-        <div className="w-full bg-white p-1.5 rounded-2xl shadow-lg flex mb-4 border-b-4 border-gray-100">
+        <div className="w-full bg-white p-1 rounded-2xl shadow-md flex mb-4">
            <button
              onClick={() => { playSound('click'); setMode('difference'); }}
-             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-sm transition-all
+             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-black text-xs sm:text-sm transition-all
                ${mode === 'difference' 
-                 ? 'bg-sky-500 text-white shadow-md ring-2 ring-sky-200' 
-                 : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}
+                 ? 'bg-sky-500 text-white shadow-sm' 
+                 : 'text-gray-400 hover:bg-gray-50'}
              `}
            >
-             <Search size={18} /> {t.leaderboard.modeDiff}
+             <Search size={16} /> {t.leaderboard.modeDiff}
            </button>
            <button
              onClick={() => { playSound('click'); setMode('quiz'); }}
-             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-black text-sm transition-all
+             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-black text-xs sm:text-sm transition-all
                ${mode === 'quiz' 
-                 ? 'bg-indigo-500 text-white shadow-md ring-2 ring-indigo-200' 
-                 : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}
+                 ? 'bg-indigo-500 text-white shadow-sm' 
+                 : 'text-gray-400 hover:bg-gray-50'}
              `}
            >
-             <Brain size={18} /> {t.leaderboard.modeQuiz}
+             <Brain size={16} /> {t.leaderboard.modeQuiz}
            </button>
         </div>
 
         {/* --- SUB TABS (DIFFICULTY) --- */}
-        <div className="flex gap-2 mb-6 w-full overflow-x-auto pb-2 px-1">
+        <div className="flex gap-2 mb-4 w-full overflow-x-auto pb-2 px-1 no-scrollbar">
            {(['easy', 'medium', 'hard'] as Difficulty[]).map((d) => (
              <button
                key={d}
                onClick={() => { playSound('click'); setDifficulty(d); }}
                className={`
-                 flex-1 py-2 rounded-xl font-bold capitalize transition-all border-b-4 active:border-b-0 active:translate-y-1 text-sm sm:text-base whitespace-nowrap
-                 ${difficulty === d && d === 'easy' ? 'bg-green-500 border-green-700 text-white shadow-lg' : ''}
-                 ${difficulty === d && d === 'medium' ? 'bg-blue-500 border-blue-700 text-white shadow-lg' : ''}
-                 ${difficulty === d && d === 'hard' ? 'bg-purple-500 border-purple-700 text-white shadow-lg' : ''}
-                 ${difficulty !== d ? 'bg-white border-gray-200 text-gray-400 hover:bg-gray-50' : ''}
+                 flex-1 py-2 rounded-xl font-bold capitalize transition-all text-xs sm:text-sm whitespace-nowrap shadow-sm
+                 ${difficulty === d && d === 'easy' ? 'bg-green-500 text-white' : ''}
+                 ${difficulty === d && d === 'medium' ? 'bg-blue-500 text-white' : ''}
+                 ${difficulty === d && d === 'hard' ? 'bg-purple-500 text-white' : ''}
+                 ${difficulty !== d ? 'bg-white text-gray-400 border border-gray-100' : ''}
                `}
              >
                {d === 'easy' ? t.leaderboard.diffEasy : d === 'medium' ? t.leaderboard.diffMedium : t.leaderboard.diffHard}
@@ -184,7 +174,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
       {/* --- LIST SCORES --- */}
       <div className="flex-1 w-full max-w-lg overflow-y-auto px-4 pb-20 z-10 custom-scrollbar">
         {scores.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-[2rem] border-4 border-dashed border-gray-200 shadow-sm opacity-80 mt-4">
+            <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-[2rem] border-2 border-dashed border-gray-200 shadow-sm opacity-80 mt-2">
                 {isLoading ? (
                   <>
                      <Loader2 size={48} className="text-sky-300 animate-spin mb-4" />
@@ -206,21 +196,14 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
                       <div 
                         key={i} 
                         className={`
-                          relative rounded-3xl p-4 flex items-center border-b-4 transition-all duration-300 animate-pop-in
+                          relative rounded-2xl p-3 sm:p-4 flex items-center transition-all duration-300 animate-pop-in
                           ${style.card}
                         `}
-                        style={{ animationDelay: `${i * 100}ms` }}
+                        style={{ animationDelay: `${i * 50}ms` }}
                       >
-                         {/* Confetti effect for Rank 1 */}
-                         {i === 0 && (
-                           <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
-                              <div className="absolute top-0 right-0 w-20 h-20 bg-white opacity-20 rounded-full blur-xl animate-pulse"></div>
-                           </div>
-                         )}
-
                          {/* Badge Rank */}
                          <div className={`
-                            w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg mr-4 shadow-sm shrink-0
+                            w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mr-3 sm:mr-4 shadow-sm shrink-0
                             ${style.badge}
                          `}>
                             {style.icon}
@@ -228,7 +211,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
 
                          {/* Info */}
                          <div className="flex-1 min-w-0 z-10">
-                            <p className={`font-black text-lg truncate uppercase tracking-tight ${style.text}`}>
+                            <p className={`font-black text-base sm:text-lg truncate uppercase tracking-tight ${style.text}`}>
                               {entry.name}
                             </p>
                             <div className={`flex items-center gap-1 text-[10px] font-bold opacity-80 ${style.text}`}>
@@ -239,11 +222,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
 
                          {/* Score */}
                          <div 
-                            className={`text-2xl font-black font-titan tracking-tighter z-10 ${style.score}`}
-                            style={i === 0 ? { 
-                                WebkitTextStroke: '1.5px black', 
-                                textShadow: '2px 2px 0px rgba(0,0,0,0.2)' 
-                            } : {}}
+                            className={`text-xl sm:text-2xl font-black z-10 ${style.score}`}
                          >
                             {entry.score}
                          </div>
@@ -253,7 +232,6 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
             </div>
         )}
       </div>
-
     </div>
   );
 };

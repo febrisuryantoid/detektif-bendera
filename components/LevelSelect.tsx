@@ -7,7 +7,7 @@ import { useLanguage } from '../utils/i18n';
 
 interface LevelSelectProps {
   difficulty: Difficulty;
-  unlockedCount: number; // How many levels are unlocked (1 to 50)
+  unlockedCount: number;
   onSelectLevel: (levelIndex: number) => void;
   onBack: () => void;
 }
@@ -33,50 +33,50 @@ export const LevelSelect: React.FC<LevelSelectProps> = ({ difficulty, unlockedCo
   };
 
   return (
-    <div className="min-h-screen bg-sky-100 flex flex-col">
-      {/* Header */}
-      <div className="bg-white p-4 shadow-lg border-b-4 border-sky-200 flex items-center gap-4 z-10">
+    <div className="fixed inset-0 bg-sky-100 flex flex-col overflow-hidden">
+      {/* HEADER: Force top, compact */}
+      <div className="bg-white p-2 shadow-md border-b-[3px] border-sky-200 flex items-center gap-3 z-20 shrink-0 h-14 sm:h-16">
         <button 
           onClick={() => { playSound('click'); onBack(); }}
-          className="p-2 bg-gray-100 rounded-xl border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all"
+          className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-lg border-b-[3px] border-gray-300 active:border-b-0 active:translate-y-0.5 transition-all"
         >
-          <ChevronLeft size={28} className="text-gray-600" />
+          <ChevronLeft size={20} className="text-gray-600" />
         </button>
-        <h1 className={`text-2xl font-black uppercase tracking-wide ${getColor()}`}>
+        <h1 className={`text-lg sm:text-xl font-black uppercase tracking-wide ${getColor()}`}>
           {difficulty} {t.levelSelect.title}
         </h1>
       </div>
 
-      {/* Grid */}
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4 max-w-4xl mx-auto pb-8">
+      {/* GRID CONTAINER: Fill remaining space, handle scrolling internally */}
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 no-scrollbar">
+        <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 sm:gap-3 max-w-5xl mx-auto pb-8">
           {Array.from({ length: 50 }).map((_, i) => {
             const isUnlocked = i < unlockedCount;
-            const isCompleted = i < unlockedCount - 1; // Simplify: previous ones are "done"
+            const isCompleted = i < unlockedCount - 1; 
             
             return (
               <button
                 key={i}
                 onClick={() => handleLevelClick(i)}
                 className={`
-                  aspect-square rounded-2xl flex items-center justify-center text-xl font-black relative
+                  aspect-square rounded-xl flex items-center justify-center text-sm sm:text-lg font-black relative
                   transition-all duration-200 shadow-sm
                   ${isUnlocked 
-                    ? 'bg-white text-sky-600 border-b-4 border-sky-200 hover:-translate-y-1 hover:shadow-md active:border-b-0 active:translate-y-1 cursor-pointer' 
-                    : 'bg-gray-200 text-gray-400 border-b-4 border-gray-300 cursor-not-allowed'}
+                    ? 'bg-white text-sky-600 border-b-[3px] border-sky-200 hover:-translate-y-0.5 hover:shadow-md active:border-b-0 active:translate-y-0.5 cursor-pointer' 
+                    : 'bg-gray-200 text-gray-400 border-b-[3px] border-gray-300 cursor-not-allowed'}
                 `}
               >
                 {isUnlocked ? (
                   <>
                     {i + 1}
                     {isCompleted && (
-                      <div className="absolute -top-2 -right-2">
-                         <Star size={16} className="fill-yellow-400 text-yellow-500" />
+                      <div className="absolute -top-1 -right-1">
+                         <Star size={10} className="fill-yellow-400 text-yellow-500" />
                       </div>
                     )}
                   </>
                 ) : (
-                  <Lock size={20} className="opacity-50" />
+                  <Lock size={14} className="opacity-50" />
                 )}
               </button>
             );
