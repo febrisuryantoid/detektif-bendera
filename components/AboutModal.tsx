@@ -2,12 +2,15 @@
 import React from 'react';
 import { X, Globe, ExternalLink, Heart, Layers, Code, Palette, Music } from 'lucide-react';
 import { playSound } from '../utils/sound';
+import { useLanguage } from '../utils/i18n';
 
 interface AboutModalProps {
   onClose: () => void;
 }
 
 export const AboutModal: React.FC<AboutModalProps> = ({ onClose }) => {
+  const { t } = useLanguage();
+  
   const handleClose = () => {
     playSound('click');
     onClose();
@@ -21,14 +24,8 @@ export const AboutModal: React.FC<AboutModalProps> = ({ onClose }) => {
         <div className="bg-sky-500 p-4 pt-6 text-center relative">
           <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle,#fff_2px,transparent_2px)] bg-[length:16px_16px]"></div>
           <h2 className="text-3xl font-black text-white font-titan tracking-wider uppercase drop-shadow-md relative z-10">
-            Tentang Game
+            {t.about.title}
           </h2>
-          <button 
-            onClick={handleClose}
-            className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white p-2 rounded-full transition-colors backdrop-blur-sm z-20"
-          >
-            <X size={24} strokeWidth={3} />
-          </button>
         </div>
 
         {/* Scrollable Content */}
@@ -44,7 +41,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ onClose }) => {
                </div>
              </div>
              
-             <p className="text-indigo-400 font-bold text-xs uppercase tracking-widest mb-1">Pengembang</p>
+             <p className="text-indigo-400 font-bold text-xs uppercase tracking-widest mb-1">{t.about.dev}</p>
              <h3 className="text-2xl font-black text-indigo-900 font-titan mb-3">Febri Suryanto</h3>
              
              <a 
@@ -62,34 +59,34 @@ export const AboutModal: React.FC<AboutModalProps> = ({ onClose }) => {
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
               <Layers size={20} className="text-gray-400" />
-              <h4 className="font-black text-gray-700 uppercase tracking-wide">Kredit & Aset</h4>
+              <h4 className="font-black text-gray-700 uppercase tracking-wide">{t.about.assets}</h4>
             </div>
 
             <div className="grid gap-3">
                <CreditItem 
                  icon={<Palette size={16} className="text-pink-500" />}
-                 title="Ikon & UI"
+                 title={t.about.icons}
                  desc="Lucide React & Flaticon"
                  bg="bg-pink-50"
                  border="border-pink-100"
                />
                <CreditItem 
                  icon={<Globe size={16} className="text-green-500" />}
-                 title="Gambar Bendera"
+                 title={t.about.flags}
                  desc="FlagCDN"
                  bg="bg-green-50"
                  border="border-green-100"
                />
                <CreditItem 
                  icon={<Music size={16} className="text-orange-500" />}
-                 title="Audio & SFX"
+                 title={t.about.audio}
                  desc="Web Audio API (Generated)"
                  bg="bg-orange-50"
                  border="border-orange-100"
                />
                <CreditItem 
                  icon={<span className="font-titan text-blue-500 text-sm">Aa</span>}
-                 title="Font"
+                 title={t.about.fonts}
                  desc="Google Fonts (Titan One & Fredoka)"
                  bg="bg-blue-50"
                  border="border-blue-100"
@@ -99,7 +96,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ onClose }) => {
 
           <div className="mt-8 text-center opacity-60">
             <p className="text-xs font-bold text-gray-400 flex items-center justify-center gap-1">
-              Dibuat dengan <Heart size={12} className="fill-red-400 text-red-400" /> untuk Anak Indonesia
+              {t.about.footer}
             </p>
           </div>
 
@@ -111,7 +108,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ onClose }) => {
              onClick={handleClose}
              className="w-full bg-sky-500 text-white font-black py-3 rounded-2xl border-b-4 border-sky-700 active:border-b-0 active:translate-y-1 transition-all shadow-lg"
            >
-             Tutup
+             {t.about.btnClose}
            </button>
         </div>
 

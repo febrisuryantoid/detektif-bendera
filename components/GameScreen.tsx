@@ -4,6 +4,7 @@ import { LevelData } from '../types';
 import { getFlagName } from '../utils/flagData';
 import { Lightbulb, Home, Clock, Check, X, Eye, ImageOff, Trophy } from 'lucide-react';
 import { playSound } from '../utils/sound';
+import { useLanguage } from '../utils/i18n';
 
 interface GameScreenProps {
   level: LevelData;
@@ -14,6 +15,7 @@ interface GameScreenProps {
 }
 
 export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore, onLevelComplete, onGoHome }) => {
+  const { t, lang } = useLanguage();
   const [timeLeft, setTimeLeft] = useState<number | null>(level.timerSeconds || null);
   const [hintsLeft, setHintsLeft] = useState(level.maxHints);
   const [currentScore, setCurrentScore] = useState(0);
@@ -27,7 +29,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore
   const [failedImages, setFailedImages] = useState<Record<number, boolean>>({});
 
   const completeTriggered = useRef(false);
-  const targetName = getFlagName(level.targetFlag);
+  const targetName = getFlagName(level.targetFlag, lang);
 
   useEffect(() => {
     const allFlags = [level.targetFlag, ...level.distractorFlags];
@@ -150,7 +152,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore
           {/* Level Badge */}
           <div className="flex flex-col items-center">
             <div className="bg-indigo-500 text-white text-xs font-black px-4 py-1.5 rounded-full shadow-sm uppercase tracking-widest border-b-4 border-indigo-700">
-              Level {level.levelNumber}
+              {t.game.level} {level.levelNumber}
             </div>
           </div>
 
@@ -176,10 +178,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore
 
            <div className="flex items-center justify-center gap-2 mb-1">
              <Eye size={18} className="text-sky-600" />
-             <span className="text-sky-700 font-bold text-xs uppercase tracking-wider">Misi Pencarian</span>
+             <span className="text-sky-700 font-bold text-xs uppercase tracking-wider">{t.game.mission}</span>
            </div>
            <h1 className="text-xl sm:text-2xl font-black text-gray-800 uppercase leading-tight font-titan">
-             Temukan <span className="text-pink-500 underline decoration-wavy decoration-2">{targetName}</span>
+             {t.game.find} <span className="text-pink-500 underline decoration-wavy decoration-2">{targetName}</span>
            </h1>
         </div>
       </div>
@@ -257,7 +259,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ level, currentTotalScore
             `}
           >
             <Lightbulb size={24} className={hintsLeft > 0 && !isGameOver ? "animate-pulse" : ""} fill={hintsLeft > 0 ? "currentColor" : "none"} />
-            <span>Bantuan ({hintsLeft})</span>
+            <span>{t.game.hint} ({hintsLeft})</span>
           </button>
         </div>
       </div>

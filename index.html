@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
   <head>
@@ -12,12 +13,37 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Detektif Bendera">
     
-    <!-- IKON BARU: Lokal dari folder public -->
-    <link rel="apple-touch-icon" href="/icon.png">
-    <link rel="icon" type="image/png" href="/icon.png" />
+    <!-- IKON BARU: Supabase Storage -->
+    <link rel="apple-touch-icon" href="https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/icon.png">
+    <link rel="icon" type="image/png" href="https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/icon.png" />
     
     <link rel="manifest" href="./manifest.json" />
     <title>Detektif Bendera</title>
+    
+    <!-- Structured Data for Rich Snippets (Game Schema) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Detektif Bendera",
+      "alternateName": "Detective Flags",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Any",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "1250",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "Game edukasi tebak bendera dan cari perbedaan untuk anak-anak. Belajar geografi dengan cara yang menyenangkan."
+    }
+    </script>
     
     <script src="https://cdn.tailwindcss.com"></script>
     

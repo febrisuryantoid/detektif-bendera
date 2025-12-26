@@ -4,6 +4,7 @@ import { Star, ArrowRight, Home, RotateCcw, Trophy, Frown, UploadCloud } from 'l
 import { playSound } from '../utils/sound';
 import { saveScore } from '../utils/storage';
 import { Difficulty, GameMode } from '../types';
+import { useLanguage } from '../utils/i18n';
 
 interface ResultModalProps {
   score: number; // Ini sekarang adalah CUMULATIVE SCORE
@@ -18,6 +19,7 @@ interface ResultModalProps {
 }
 
 export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mode, playerName, isLastLevel, isWin, onNext, onHome, onReplay }) => {
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Simpan skor dengan Mode yang sesuai
@@ -42,18 +44,18 @@ export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mod
     bgColor: 'bg-green-50',
     iconBg: 'bg-green-400',
     icon: <Star size={64} className="text-yellow-300 fill-yellow-300 animate-spin-slow" strokeWidth={2.5} />,
-    title: 'HORE BERHASIL!',
+    title: t.result.winTitle,
     titleColor: 'text-green-600',
-    msg: 'Kamu hebat sekali!',
+    msg: t.result.winMsg,
     btnMain: 'bg-green-500 border-green-700 hover:bg-green-400',
   } : {
     borderColor: 'border-red-500',
     bgColor: 'bg-red-50',
     iconBg: 'bg-red-400',
     icon: <Frown size={64} className="text-white animate-bounce" strokeWidth={2.5} />,
-    title: 'YAH, GAGAL!',
+    title: t.result.loseTitle,
     titleColor: 'text-red-500',
-    msg: 'Waktu habis atau salah tebak.',
+    msg: t.result.loseMsg,
     btnMain: 'bg-red-500 border-red-700 hover:bg-red-400',
   };
 
@@ -84,7 +86,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mod
           <div className="bg-yellow-50 rounded-3xl p-4 border-4 border-yellow-200 mb-6 shadow-inner relative overflow-hidden">
              <div className="flex justify-center items-center gap-2 mb-1 opacity-70">
                 <Trophy size={18} className="text-yellow-600" />
-                <span className="text-xs font-black uppercase text-yellow-700 tracking-widest">Total Skor</span>
+                <span className="text-xs font-black uppercase text-yellow-700 tracking-widest">{t.result.totalScore}</span>
              </div>
              <div className="text-6xl font-black text-yellow-500 font-titan tracking-tighter drop-shadow-sm">
                 {score}
@@ -105,11 +107,11 @@ export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mod
                      onClick={() => handleClick(onNext)}
                      className="w-full bg-green-500 hover:bg-green-400 text-white text-xl font-black py-4 rounded-2xl border-b-8 border-green-700 active:border-b-0 active:translate-y-2 transition-all flex items-center justify-center gap-3 shadow-lg group"
                    >
-                     Level Berikutnya <ArrowRight className="group-hover:translate-x-1 transition-transform" strokeWidth={3} />
+                     {t.result.btnNext} <ArrowRight className="group-hover:translate-x-1 transition-transform" strokeWidth={3} />
                    </button>
                 ) : (
                    <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-black p-4 rounded-2xl border-b-8 border-orange-700 shadow-lg text-lg animate-pulse">
-                      KAMU JUARA DUNIA! 🏆
+                      {t.result.btnChampion}
                    </div>
                 )
              ) : (
@@ -118,7 +120,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mod
                   onClick={() => handleClick(onReplay)}
                   className="w-full bg-sky-400 hover:bg-sky-300 text-white text-xl font-black py-4 rounded-2xl border-b-8 border-sky-600 active:border-b-0 active:translate-y-2 transition-all flex items-center justify-center gap-3 shadow-lg"
                 >
-                  <RotateCcw strokeWidth={3} /> Main Dari Awal
+                  <RotateCcw strokeWidth={3} /> {t.result.btnReplay}
                 </button>
              )}
 
@@ -127,7 +129,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({ score, difficulty, mod
                 onClick={() => handleClick(onHome)}
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold py-3 rounded-2xl border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center gap-2 mt-2"
              >
-                <Home size={20} strokeWidth={2.5} /> Kembali ke Menu
+                <Home size={20} strokeWidth={2.5} /> {t.result.btnHome}
              </button>
           </div>
 

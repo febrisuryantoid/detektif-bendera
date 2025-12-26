@@ -11,8 +11,8 @@ const PRECACHE_URLS = [
   // External Libraries (PENTING untuk Offline)
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Titan+One&display=swap',
-  // App Icon (Lokal)
-  './icon.png'
+  // App Icon (External Supabase)
+  'https://yzpezhqxhmkgyskvklge.supabase.co/storage/v1/object/public/images/icon.png'
 ];
 
 // Install Handler
@@ -59,6 +59,7 @@ self.addEventListener('fetch', event => {
     url.hostname.includes('flagcdn.com') || 
     url.hostname.includes('flaticon.com') || 
     url.hostname.includes('gstatic.com') ||
+    url.hostname.includes('supabase.co') ||
     event.request.destination === 'image' ||
     event.request.destination === 'font'
   ) {

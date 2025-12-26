@@ -9,12 +9,14 @@ import { Leaderboard } from './components/Leaderboard';
 import { NameInputModal } from './components/NameInputModal';
 import { LEVELS } from './data/levels';
 import { QUIZ_LEVELS } from './data/quizLevels';
-import { Difficulty, GameMode } from './types';
+import { Difficulty, GameMode } from '../types';
 import { startMusic, stopMusic } from './utils/sound';
+import { LanguageProvider, useLanguage } from './utils/i18n';
 
 type ScreenState = 'MENU' | 'LEVEL_SELECT' | 'GAME' | 'RESULT' | 'LEADERBOARD';
 
-export default function App() {
+function AppContent() {
+  const { lang } = useLanguage();
   const [screen, setScreen] = useState<ScreenState>('MENU');
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('easy');
   const [selectedMode, setSelectedMode] = useState<GameMode>('difference');
@@ -35,6 +37,17 @@ export default function App() {
     medium: 1,
     hard: 1
   });
+
+  // SEO Update Effect
+  useEffect(() => {
+    if (lang === 'id') {
+      document.title = "Detektif Bendera - Game Edukasi Anak";
+      document.querySelector('meta[name="description"]')?.setAttribute('content', 'Mainkan game edukasi Detektif Bendera. Tebak nama negara dan cari perbedaan bendera. Seru, mendidik, dan gratis untuk anak Indonesia!');
+    } else {
+      document.title = "Detective Flags - Educational Kids Game";
+      document.querySelector('meta[name="description"]')?.setAttribute('content', 'Play Detective Flags educational game. Guess the country flags and find differences. Fun, educational, and free for kids worldwide!');
+    }
+  }, [lang]);
 
   // Determine Active Levels based on Mode and Difficulty
   const activeLevels = useMemo(() => {
@@ -57,7 +70,6 @@ export default function App() {
   }, [screen, selectedDifficulty]);
 
   const handleStartFlow = (diff: Difficulty, mode: GameMode) => {
-    // LOGIC CHANGE: Selalu minta nama setiap kali klik start di menu
     setPendingStart({ diff, mode });
     setShowNameModal(true);
   };
@@ -204,5 +216,13 @@ export default function App() {
         </>
       )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }

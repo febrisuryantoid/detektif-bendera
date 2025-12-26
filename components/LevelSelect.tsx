@@ -3,6 +3,7 @@ import React from 'react';
 import { Difficulty } from '../types';
 import { playSound } from '../utils/sound';
 import { Lock, ChevronLeft, Star } from 'lucide-react';
+import { useLanguage } from '../utils/i18n';
 
 interface LevelSelectProps {
   difficulty: Difficulty;
@@ -12,6 +13,7 @@ interface LevelSelectProps {
 }
 
 export const LevelSelect: React.FC<LevelSelectProps> = ({ difficulty, unlockedCount, onSelectLevel, onBack }) => {
+  const { t } = useLanguage();
   
   const handleLevelClick = (index: number) => {
     if (index < unlockedCount) {
@@ -41,7 +43,7 @@ export const LevelSelect: React.FC<LevelSelectProps> = ({ difficulty, unlockedCo
           <ChevronLeft size={28} className="text-gray-600" />
         </button>
         <h1 className={`text-2xl font-black uppercase tracking-wide ${getColor()}`}>
-          {difficulty} Levels
+          {difficulty} {t.levelSelect.title}
         </h1>
       </div>
 

@@ -4,12 +4,14 @@ import { ChevronLeft, Trophy, Crown, Calendar, Medal, Search, Brain, Star, Globe
 import { playSound } from '../utils/sound';
 import { Difficulty, GameMode, ScoreEntry } from '../types';
 import { getLocalHighScores, getGlobalHighScores } from '../utils/storage';
+import { useLanguage } from '../utils/i18n';
 
 interface LeaderboardProps {
   onBack: () => void;
 }
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
+  const { t } = useLanguage();
   const [mode, setMode] = useState<GameMode>('difference');
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
   
@@ -58,36 +60,42 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
   }, [mode, difficulty, isOnline]);
 
   const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('id-ID', {
+    return new Date(timestamp).toLocaleString('id-ID', {
       day: 'numeric',
       month: 'short',
-      year: 'numeric'
-    });
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).replace('.', ':');
   };
 
   const getRankStyle = (index: number) => {
     if (index === 0) return {
-      card: 'bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 border-yellow-600 text-white transform scale-105 z-10 shadow-xl',
+      // GOLD: Richer Gradient + Black Stroke on Score
+      card: 'bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 border-yellow-600 text-white transform scale-105 z-10 shadow-xl',
       badge: 'bg-white text-yellow-600 ring-4 ring-yellow-200',
       icon: <Crown size={24} className="fill-yellow-500 text-yellow-600" />,
       text: 'text-white drop-shadow-md',
       score: 'text-white drop-shadow-md'
     };
     if (index === 1) return {
-      card: 'bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 border-slate-500 text-slate-800 shadow-lg',
+      // SILVER: Cool Gray Gradient
+      card: 'bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 border-slate-400 text-slate-800 shadow-lg',
       badge: 'bg-white text-slate-600 ring-2 ring-slate-200',
       icon: <Medal size={24} className="fill-slate-400 text-slate-500" />,
-      text: 'text-slate-900',
+      text: 'text-slate-800',
       score: 'text-slate-900'
     };
     if (index === 2) return {
-      card: 'bg-gradient-to-br from-orange-200 via-orange-300 to-orange-400 border-orange-500 text-orange-900 shadow-lg',
+      // BRONZE: Warm Orange/Brown Gradient
+      card: 'bg-gradient-to-br from-orange-100 via-orange-200 to-orange-300 border-orange-400 text-orange-900 shadow-lg',
       badge: 'bg-white text-orange-700 ring-2 ring-orange-200',
       icon: <Medal size={24} className="fill-orange-400 text-orange-600" />,
       text: 'text-orange-900',
       score: 'text-orange-950'
     };
     return {
+      // DEFAULT: White
       card: 'bg-white border-gray-100 shadow-sm hover:shadow-md hover:scale-[1.01]',
       badge: 'bg-gray-100 text-gray-500',
       icon: <span className="font-black text-sm">{index + 1}</span>,
@@ -119,7 +127,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
            <div className="bg-white/20 backdrop-blur-md px-6 py-2 rounded-full border-2 border-white/40 shadow-sm flex items-center gap-2">
              {isLoading && <Loader2 size={16} className="text-white animate-spin" />}
              <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2 drop-shadow-md font-titan">
-               <Globe size={24} className="text-white" /> Peringkat Dunia
+               <Globe size={24} className="text-white" /> {t.leaderboard.title}
              </h1>
            </div>
            
@@ -138,7 +146,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
                  : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}
              `}
            >
-             <Search size={18} /> Cari Beda
+             <Search size={18} /> {t.leaderboard.modeDiff}
            </button>
            <button
              onClick={() => { playSound('click'); setMode('quiz'); }}
@@ -148,7 +156,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
                  : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}
              `}
            >
-             <Brain size={18} /> Tebak Nama
+             <Brain size={18} /> {t.leaderboard.modeQuiz}
            </button>
         </div>
 
@@ -166,7 +174,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
                  ${difficulty !== d ? 'bg-white border-gray-200 text-gray-400 hover:bg-gray-50' : ''}
                `}
              >
-               {d === 'easy' ? 'Mudah' : d === 'medium' ? 'Sedang' : 'Sulit'}
+               {d === 'easy' ? t.leaderboard.diffEasy : d === 'medium' ? t.leaderboard.diffMedium : t.leaderboard.diffHard}
              </button>
            ))}
         </div>
@@ -180,13 +188,13 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
                 {isLoading ? (
                   <>
                      <Loader2 size={48} className="text-sky-300 animate-spin mb-4" />
-                     <h3 className="text-gray-400 font-bold">Sedang memuat skor...</h3>
+                     <h3 className="text-gray-400 font-bold">{t.leaderboard.loading}</h3>
                   </>
                 ) : (
                   <>
                     <Trophy size={64} className="text-gray-200 mb-4" />
-                    <h3 className="text-gray-400 font-bold text-lg">Belum ada juara.</h3>
-                    <p className="text-gray-400 text-sm">Jadilah yang pertama!</p>
+                    <h3 className="text-gray-400 font-bold text-lg">{t.leaderboard.emptyTitle}</h3>
+                    <p className="text-gray-400 text-sm">{t.leaderboard.emptyDesc}</p>
                   </>
                 )}
             </div>
@@ -223,14 +231,20 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
                             <p className={`font-black text-lg truncate uppercase tracking-tight ${style.text}`}>
                               {entry.name}
                             </p>
-                            <div className={`flex items-center gap-1 text-[10px] font-bold opacity-70 ${style.text}`}>
+                            <div className={`flex items-center gap-1 text-[10px] font-bold opacity-80 ${style.text}`}>
                                 <Calendar size={10} />
                                 <span>{formatDate(entry.date)}</span>
                             </div>
                          </div>
 
                          {/* Score */}
-                         <div className={`text-2xl font-black font-titan tracking-tighter z-10 ${style.score}`}>
+                         <div 
+                            className={`text-2xl font-black font-titan tracking-tighter z-10 ${style.score}`}
+                            style={i === 0 ? { 
+                                WebkitTextStroke: '1.5px black', 
+                                textShadow: '2px 2px 0px rgba(0,0,0,0.2)' 
+                            } : {}}
+                         >
                             {entry.score}
                          </div>
                       </div>
